@@ -291,7 +291,7 @@ export default function PaymentForm() {
                 {/* Payment Type Tabs */}
                 <Tabs
                   value={paymentType}
-                  onValueChange={(value: PaymentType) => setPaymentType(value)}
+                  onValueChange={(value) => setPaymentType(value as PaymentType)}
                   className="w-full"
                 >
                   <TabsList className="grid w-full grid-cols-3">
@@ -389,7 +389,7 @@ export default function PaymentForm() {
 
                 {/* Save Data Checkbox */}
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="save-data" checked={saveData} onCheckedChange={setSaveData} />
+                  <Checkbox id="save-data" checked={saveData} onCheckedChange={checked => setSaveData(checked === true)} />
                   <Label htmlFor="save-data" className="text-sm">
                     {t.saveData}
                   </Label>
