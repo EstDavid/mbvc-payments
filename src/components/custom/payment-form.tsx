@@ -14,79 +14,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Globe } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Language, PaymentType } from "@/types/payment";
 import Image from "next/image";
 
-type Language = "es" | "en";
-type PaymentType = "predefined" | "custom" | "membership";
-
-const translations = {
-  es: {
-    title: "Montgó Beach Volley Club - Pagos Bizum",
-    description: "Complete sus datos para procesar el pago",
-    personalInfo: "Información Personal",
-    name: "Nombre",
-    surname: "Apellidos",
-    phone: "Teléfono",
-    email: "Correo Electrónico",
-    paymentDetails: "Detalles del Pago",
-    paymentType: "Tipo de Pago",
-    predefinedServices: "Servicios Predefinidos",
-    customAmount: "Cantidad Personalizada",
-    membership: "Membresía Anual",
-    memberPrices: "Precios de Miembro",
-    memberPricesWarning: "Selecciona precios de miembro solo si tienes una membresía anual activa",
-    understand: "Entiendo",
-    services: {
-      monthly1: "Suscripción mensual, 1 entrenamiento por semana",
-      monthly2: "Suscripción mensual, 2 entrenamientos por semana",
-      monthly3: "Suscripción mensual, 3 entrenamientos por semana",
-      dropIn: "Clases sueltas",
-    },
-    amount: "Cantidad",
-    paymentDescription: "Descripción del Pago",
-    saveData: "Guardar mis datos para futuros pagos",
-    processPayment: "Procesar Pago",
-    required: "Campo requerido",
-    selectService: "Selecciona un servicio",
-    enterAmount: "Ingresa la cantidad",
-    enterDescription: "Ingresa la descripción",
-    phoneValidation: "Número de móvil español no válido (debe empezar por 6, 7 o 9 y tener 9 dígitos)",
-    phoneFormat: "Formato: 6XX XXX XXX",
-  },
-  en: {
-    title: "Montgó Beach Volley Club - Bizum payments",
-    description: "Complete your details to process the payment",
-    personalInfo: "Personal Information",
-    name: "Name",
-    surname: "Surname",
-    phone: "Phone Number",
-    email: "Email Address",
-    paymentDetails: "Payment Details",
-    paymentType: "Payment Type",
-    predefinedServices: "Predefined Services",
-    customAmount: "Custom Amount",
-    membership: "Annual Membership",
-    memberPrices: "Member Prices",
-    memberPricesWarning: "Select member prices only if you have an active yearly membership",
-    understand: "I Understand",
-    services: {
-      monthly1: "Monthly subscription, 1 training per week",
-      monthly2: "Monthly subscription, 2 trainings per week",
-      monthly3: "Monthly subscription, 3 trainings per week",
-      dropIn: "Drop-in classes",
-    },
-    amount: "Amount",
-    paymentDescription: "Payment Description",
-    saveData: "Save my data for future payments",
-    processPayment: "Process Payment",
-    required: "Required field",
-    selectService: "Select a service",
-    enterAmount: "Enter amount",
-    enterDescription: "Enter description",
-    phoneValidation: "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
-    phoneFormat: "Format: 6XX XXX XXX",
-  },
-};
+import translations from "@/lib/translations";
 
 const servicesPrices = {
   monthly1: { nonMember: 42, member: 33 },
@@ -232,7 +163,10 @@ export default function PaymentForm () {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
-import type { Language, PaymentType } from "@/types/payment";
+                <h3 className="text-lg font-semibold text-gray-900">{t.personalInfo}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">{t.name} *</Label>
                     <Input
                       id="name"
                       value={formData.name}
