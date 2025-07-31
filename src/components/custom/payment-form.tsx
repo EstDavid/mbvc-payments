@@ -232,10 +232,7 @@ export default function PaymentForm () {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">{t.personalInfo}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">{t.name} *</Label>
+import type { Language, PaymentType } from "@/types/payment";
                     <Input
                       id="name"
                       value={formData.name}
