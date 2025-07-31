@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { AlertCircle, Globe } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle, Globe } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 
-type Language = "es" | "en"
-type PaymentType = "predefined" | "custom" | "membership"
+type Language = "es" | "en";
+type PaymentType = "predefined" | "custom" | "membership";
 
 const translations = {
   es: {
@@ -86,98 +86,100 @@ const translations = {
     phoneValidation: "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
     phoneFormat: "Format: 6XX XXX XXX",
   },
-}
+};
 
-const services = {
+const servicesPrices = {
   monthly1: { nonMember: 42, member: 33 },
   monthly2: { nonMember: 68, member: 54 },
   monthly3: { nonMember: 90, member: 72 },
-  dropIn: { nonMember: 12, member: 10 },
-}
+  dropIn: { nonMember: 12, member: 10 }
+};
 
-export default function PaymentForm() {
-  const [language, setLanguage] = useState<Language>("es")
-  const [paymentType, setPaymentType] = useState<PaymentType>("predefined")
-  const [isMember, setIsMember] = useState(false)
-  const [selectedService, setSelectedService] = useState("")
-  const [customAmount, setCustomAmount] = useState("")
-  const [customDescription, setCustomDescription] = useState("")
-  const [saveData, setSaveData] = useState(false)
-  const [showMemberModal, setShowMemberModal] = useState(false)
+const membershipPrice = 36;
+
+export default function PaymentForm () {
+  const [language, setLanguage] = useState<Language>("es");
+  const [paymentType, setPaymentType] = useState<PaymentType>("predefined");
+  const [isMember, setIsMember] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
+  const [customAmount, setCustomAmount] = useState("");
+  const [customDescription, setCustomDescription] = useState("");
+  const [saveData, setSaveData] = useState(false);
+  const [showMemberModal, setShowMemberModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
     phone: "",
     email: "",
-  })
-  const [phoneError, setPhoneError] = useState("")
+  });
+  const [phoneError, setPhoneError] = useState("");
 
-  const t = translations[language]
+  const t = translations[language];
 
   const handleMemberToggle = (checked: boolean) => {
     if (checked) {
-      setShowMemberModal(true)
+      setShowMemberModal(true);
     } else {
-      setIsMember(false)
+      setIsMember(false);
     }
-  }
+  };
 
   const confirmMemberPrices = () => {
-    setIsMember(true)
-    setShowMemberModal(false)
-  }
+    setIsMember(true);
+    setShowMemberModal(false);
+  };
 
   const getAmount = () => {
-    if (paymentType === "membership") return 36
-    if (paymentType === "custom") return Number.parseFloat(customAmount) || 0
-    if (selectedService && services[selectedService as keyof typeof services]) {
-      return services[selectedService as keyof typeof services][isMember ? "member" : "nonMember"]
+    if (paymentType === "membership") return membershipPrice;
+    if (paymentType === "custom") return Number.parseFloat(customAmount) || 0;
+    if (selectedService && servicesPrices[selectedService as keyof typeof servicesPrices]) {
+      return servicesPrices[selectedService as keyof typeof servicesPrices][isMember ? "member" : "nonMember"];
     }
-    return 0
-  }
+    return 0;
+  };
 
   const getDescription = () => {
-    if (paymentType === "membership") return language === "es" ? "Membresía Anual" : "Annual Membership"
-    if (paymentType === "custom") return customDescription
+    if (paymentType === "membership") return language === "es" ? "Membresía Anual" : "Annual Membership";
+    if (paymentType === "custom") return customDescription;
     if (selectedService) {
-      return t.services[selectedService as keyof typeof t.services]
+      return t.services[selectedService as keyof typeof t.services];
     }
-    return ""
-  }
+    return "";
+  };
 
   const validateSpanishPhone = (phone: string): boolean => {
     // Spanish mobile numbers: 9 digits starting with 6, 7, or 9
-    const spanishMobileRegex = /^[679]\d{8}$/
-    return spanishMobileRegex.test(phone)
-  }
+    const spanishMobileRegex = /^[679]\d{8}$/;
+    return spanishMobileRegex.test(phone);
+  };
 
   const handlePhoneChange = (value: string) => {
     // Remove any non-digit characters
-    const cleanPhone = value.replace(/\D/g, "")
+    const cleanPhone = value.replace(/\D/g, "");
 
     // Limit to 9 digits
     if (cleanPhone.length <= 9) {
-      setFormData({ ...formData, phone: cleanPhone })
+      setFormData({ ...formData, phone: cleanPhone });
 
       // Validate if phone has content
       if (cleanPhone.length > 0) {
         if (validateSpanishPhone(cleanPhone)) {
-          setPhoneError("")
+          setPhoneError("");
         } else {
           setPhoneError(
             language === "es"
               ? "Número de móvil español no válido (debe empezar por 6, 7 o 9 y tener 9 dígitos)"
               : "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
-          )
+          );
         }
       } else {
-        setPhoneError("")
+        setPhoneError("");
       }
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate phone before submission
     if (!validateSpanishPhone(formData.phone)) {
@@ -185,8 +187,8 @@ export default function PaymentForm() {
         language === "es"
           ? "Por favor, introduce un número de móvil español válido"
           : "Please enter a valid Spanish mobile number",
-      )
-      return
+      );
+      return;
     }
 
     // Handle form submission here
@@ -198,8 +200,8 @@ export default function PaymentForm() {
       description: getDescription(),
       isMember,
       saveData,
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4">
@@ -319,16 +321,16 @@ export default function PaymentForm() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="monthly1">
-                            {t.services.monthly1} - {services.monthly1[isMember ? "member" : "nonMember"]}€
+                            {t.services.monthly1} - {servicesPrices.monthly1[isMember ? "member" : "nonMember"]}€
                           </SelectItem>
                           <SelectItem value="monthly2">
-                            {t.services.monthly2} - {services.monthly2[isMember ? "member" : "nonMember"]}€
+                            {t.services.monthly2} - {servicesPrices.monthly2[isMember ? "member" : "nonMember"]}€
                           </SelectItem>
                           <SelectItem value="monthly3">
-                            {t.services.monthly3} - {services.monthly3[isMember ? "member" : "nonMember"]}€
+                            {t.services.monthly3} - {servicesPrices.monthly3[isMember ? "member" : "nonMember"]}€
                           </SelectItem>
                           <SelectItem value="dropIn">
-                            {t.services.dropIn} - {services.dropIn[isMember ? "member" : "nonMember"]}€
+                            {t.services.dropIn} - {servicesPrices.dropIn[isMember ? "member" : "nonMember"]}€
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -424,5 +426,5 @@ export default function PaymentForm() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }
