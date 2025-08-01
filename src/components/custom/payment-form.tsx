@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Language, PaymentType } from "@/types/payment";
 import translations from "@/lib/translations";
 import { servicesPrices, membershipPrice } from "@/lib/club-prices";
+import { getAmount, getDescription, validateSpanishPhone } from "@/lib/payment-utils";
 import Image from "next/image";
 
 
@@ -53,29 +54,7 @@ export default function PaymentForm () {
     setShowMemberModal(false);
   };
 
-  const getAmount = () => {
-    if (paymentType === "membership") return membershipPrice;
-    if (paymentType === "custom") return Number.parseFloat(customAmount) || 0;
-    if (selectedService && servicesPrices[selectedService as keyof typeof servicesPrices]) {
-      return servicesPrices[selectedService as keyof typeof servicesPrices][isMember ? "member" : "nonMember"];
-    }
-    return 0;
-  };
 
-  const getDescription = () => {
-    if (paymentType === "membership") return language === "es" ? "Membresía Anual" : "Annual Membership";
-    if (paymentType === "custom") return customDescription;
-    if (selectedService) {
-      return t.services[selectedService as keyof typeof t.services];
-    }
-    return "";
-  };
-
-  const validateSpanishPhone = (phone: string): boolean => {
-    // Spanish mobile numbers: 9 digits starting with 6, 7, or 9
-    const spanishMobileRegex = /^[679]\d{8}$/;
-    return spanishMobileRegex.test(phone);
-  };
 
   const handlePhoneChange = (value: string) => {
     // Remove any non-digit characters
@@ -120,8 +99,8 @@ export default function PaymentForm () {
       ...formData,
       phone: `+34${formData.phone}`, // Include country code in submission
       paymentType,
-      amount: getAmount(),
-      description: getDescription(),
+      amount: getAmount(paymentType, customAmount, selectedService, isMember),
+      description: getDescription(paymentType, customDescription, selectedService, language),
       isMember,
       saveData,
     });
@@ -308,9 +287,9 @@ export default function PaymentForm () {
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{t.amount}:</span>
-                    <span className="text-2xl font-bold text-blue-600">{getAmount()}€</span>
+                    <span className="text-2xl font-bold text-blue-600">{getAmount(paymentType, customAmount, selectedService, isMember)}€</span>
                   </div>
-                  {getDescription() && <div className="mt-2 text-sm text-gray-600">{getDescription()}</div>}
+                  {getDescription(paymentType, customDescription, selectedService, language) && <div className="mt-2 text-sm text-gray-600">{getDescription(paymentType, customDescription, selectedService, language)}</div>}
                 </div>
 
                 {/* Save Data Checkbox */}
@@ -324,7 +303,7 @@ export default function PaymentForm () {
 
               {/* Submit Button */}
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                {t.processPayment} - {getAmount()}€
+                {t.processPayment} - {getAmount(paymentType, customAmount, selectedService, isMember)}€
               </Button>
             </form>
           </CardContent>
