@@ -1,0 +1,40 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#b2a7b0",
+    "activityBar.background": "#b2a7b0",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#697828",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#b2a7b0",
+    "statusBar.background": "#9a8c98",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#81727f",
+    "statusBarItem.remoteBackground": "#9a8c98",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#9a8c98",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#9a8c9899",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#9a8c98",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.formatOnSave": true,
+  "eslint.useFlatConfig": false,
+  "javascript.format.indentSwitchCase": false,
+  "typescript.format.indentSwitchCase": false,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": true
+}

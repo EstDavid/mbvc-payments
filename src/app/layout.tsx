@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "Welcome to the payments page of MBVC",
 };
 
-export default function RootLayout({
+export default function RootLayout ({
   children,
 }: Readonly<{
   children: React.ReactNode;
