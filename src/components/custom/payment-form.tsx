@@ -1,8 +1,6 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -35,6 +33,27 @@ export default function PaymentForm () {
     email: "",
   });
   const [phoneError, setPhoneError] = useState("");
+
+  // Populate formData from localStorage on first render
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("mbvcUserData");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setFormData((prev) => ({
+          ...prev,
+          ...parsed,
+        }));
+        if (parsed.language) {
+          setLanguage(parsed.language);
+        }
+        setSaveData(true);
+      }
+    } catch (err) {
+      // Optionally handle localStorage errors
+      console.error("Failed to read user data from localStorage", err);
+    }
+  }, []);
 
   const t = translations[language];
 
@@ -87,10 +106,29 @@ export default function PaymentForm () {
       return;
     }
 
+    // Save user data to localStorage if requested
+    if (saveData) {
+      try {
+        localStorage.setItem(
+          "mbvcUserData",
+          JSON.stringify({
+            name: formData.name,
+            surname: formData.surname,
+            phone: formData.phone,
+            email: formData.email,
+            language: language,
+          })
+        );
+      } catch (err) {
+        // Optionally handle localStorage errors
+        console.error("Failed to save user data to localStorage", err);
+      }
+    }
+
     // Handle form submission here
     console.log("Form submitted:", {
       ...formData,
-      phone: `+34${formData.phone}`, // Include country code in submission
+      phone: `+34${formData.phone}`,
       paymentType,
       amount: getAmount(paymentType, customAmount, selectedService, isMember),
       description: getDescription(paymentType, customDescription, selectedService, language),
