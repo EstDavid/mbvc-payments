@@ -58,7 +58,7 @@ export default function PaymentDetailsTabs ({
         </div>
 
         {/* Service Selection */}
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label>{t.selectService} *</Label>
           <Select value={selectedService} onValueChange={setSelectedService}>
             <SelectTrigger>
@@ -79,6 +79,13 @@ export default function PaymentDetailsTabs ({
               </SelectItem>
             </SelectContent>
           </Select>
+          <Label htmlFor="custom-description">{t.description}</Label>
+          <Textarea
+            id="custom-description"
+            value={customDescription}
+            onChange={e => setCustomDescription(e.target.value)}
+            placeholder={t.enterDescription}
+          />
         </div>
       </TabsContent>
 
@@ -92,6 +99,15 @@ export default function PaymentDetailsTabs ({
             {t.membershipDescription}
           </p>
           <div className="text-2xl font-bold text-orange-800">{membershipPrice}€</div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="custom-description">{t.description}</Label>
+          <Textarea
+            id="custom-description"
+            value={customDescription}
+            onChange={e => setCustomDescription(e.target.value)}
+            placeholder={t.enterDescription}
+          />
         </div>
       </TabsContent>
 
