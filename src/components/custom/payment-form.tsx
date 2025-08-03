@@ -5,19 +5,16 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, Globe } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Language, PaymentType } from "@/types/payment";
 import translations from "@/lib/translations";
-import { servicesPrices, membershipPrice } from "@/lib/club-prices";
 import { getAmount, getDescription, validateSpanishPhone } from "@/lib/payment-utils";
+import PersonalInfoForm from "@/components/payment/PersonalInfoForm";
+import PaymentDetailsTabs from "@/components/payment/PaymentDetailsTabs";
+import MemberModal from "@/components/payment/MemberModal";
+import AmountSummary from "@/components/payment/AmountSummary";
+import LanguageSelector from "@/components/payment/LanguageSelector";
 import Image from "next/image";
 
 
@@ -109,20 +106,7 @@ export default function PaymentForm () {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4">
       <div className="max-w-2xl mx-auto">
-        {/* Language Selector */}
-        <div className="flex justify-end mb-6">
-          <Select value={language} onValueChange={(value: Language) => setLanguage(value)}>
-            <SelectTrigger className="w-32">
-              <Globe className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="es">Español</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
+        <LanguageSelector language={language} setLanguage={setLanguage} />
         <Card>
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
@@ -133,166 +117,40 @@ export default function PaymentForm () {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">{t.personalInfo}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">{t.name} *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="surname">{t.surname} *</Label>
-                    <Input
-                      id="surname"
-                      value={formData.surname}
-                      onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">{t.phone} *</Label>
-                    <div className="flex">
-                      <div className="flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md text-sm font-medium text-gray-700">
-                        +34
-                      </div>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
-                        placeholder="612345678"
-                        className="rounded-l-none"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500">{t.phoneFormat}</p>
-                    {phoneError && <p className="text-xs text-red-500">{phoneError}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">{t.email} *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Details */}
+              <PersonalInfoForm
+                formData={formData}
+                phoneError={phoneError}
+                onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+                onPhoneChange={handlePhoneChange}
+                translations={{
+                  personalInfo: t.personalInfo,
+                  name: t.name,
+                  surname: t.surname,
+                  phone: t.phone,
+                  email: t.email,
+                  phoneFormat: t.phoneFormat,
+                }}
+              />
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">{t.paymentDetails}</h3>
-
-                {/* Payment Type Tabs */}
-                <Tabs
-                  value={paymentType}
-                  onValueChange={(value) => setPaymentType(value as PaymentType)}
-                  className="w-full"
-                >
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="predefined">{t.predefinedServices}</TabsTrigger>
-                    <TabsTrigger value="membership">{t.membership}</TabsTrigger>
-                    <TabsTrigger value="custom">{t.customAmount}</TabsTrigger>
-                  </TabsList>
-
-                  {/* Predefined Services Tab */}
-                  <TabsContent value="predefined" className="space-y-4 mt-6">
-                    {/* Member Toggle */}
-                    <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
-                      <Switch id="member-toggle" checked={isMember} onCheckedChange={handleMemberToggle} />
-                      <Label htmlFor="member-toggle" className="text-sm font-medium">
-                        {t.memberPrices}
-                      </Label>
-                    </div>
-
-                    {/* Service Selection */}
-                    <div className="space-y-2">
-                      <Label>{language === "es" ? "Selecciona un servicio" : "Select a service"} *</Label>
-                      <Select value={selectedService} onValueChange={setSelectedService}>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t.selectService} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="monthly1">
-                            {t.services.monthly1} - {servicesPrices.monthly1[isMember ? "member" : "nonMember"]}€
-                          </SelectItem>
-                          <SelectItem value="monthly2">
-                            {t.services.monthly2} - {servicesPrices.monthly2[isMember ? "member" : "nonMember"]}€
-                          </SelectItem>
-                          <SelectItem value="monthly3">
-                            {t.services.monthly3} - {servicesPrices.monthly3[isMember ? "member" : "nonMember"]}€
-                          </SelectItem>
-                          <SelectItem value="dropIn">
-                            {t.services.dropIn} - {servicesPrices.dropIn[isMember ? "member" : "nonMember"]}€
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </TabsContent>
-
-                  {/* Membership Tab */}
-                  <TabsContent value="membership" className="space-y-4 mt-6">
-                    <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                      <h4 className="font-semibold text-orange-800 mb-2">
-                        {language === "es" ? "Membresía Anual" : "Annual Membership"}
-                      </h4>
-                      <p className="text-sm text-orange-700 mb-3">
-                        {language === "es"
-                          ? "La membresía anual te da acceso a precios reducidos en todos nuestros servicios durante un año completo."
-                          : "Annual membership gives you access to reduced prices on all our services for a full year."}
-                      </p>
-                      <div className="text-2xl font-bold text-orange-800">36€</div>
-                    </div>
-                  </TabsContent>
-
-                  {/* Custom Amount Tab */}
-                  <TabsContent value="custom" className="space-y-4 mt-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="custom-amount">{t.amount} (€) *</Label>
-                      <Input
-                        id="custom-amount"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
-                        placeholder={t.enterAmount}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="custom-description">{t.description} *</Label>
-                      <Textarea
-                        id="custom-description"
-                        value={customDescription}
-                        onChange={(e) => setCustomDescription(e.target.value)}
-                        placeholder={t.enterDescription}
-                        required
-                      />
-                    </div>
-                  </TabsContent>
-                </Tabs>
-
-                {/* Amount Summary */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{t.amount}:</span>
-                    <span className="text-2xl font-bold text-blue-600">{getAmount(paymentType, customAmount, selectedService, isMember)}€</span>
-                  </div>
-                  {getDescription(paymentType, customDescription, selectedService, language) && <div className="mt-2 text-sm text-gray-600">{getDescription(paymentType, customDescription, selectedService, language)}</div>}
-                </div>
-
-                {/* Save Data Checkbox */}
+                <PaymentDetailsTabs
+                  paymentType={paymentType}
+                  setPaymentType={setPaymentType}
+                  isMember={isMember}
+                  handleMemberToggle={handleMemberToggle}
+                  selectedService={selectedService}
+                  setSelectedService={setSelectedService}
+                  customAmount={customAmount}
+                  setCustomAmount={setCustomAmount}
+                  customDescription={customDescription}
+                  setCustomDescription={setCustomDescription}
+                  t={t}
+                />
+                <AmountSummary
+                  amount={getAmount(paymentType, customAmount, selectedService, isMember)}
+                  description={getDescription(paymentType, customDescription, selectedService, language)}
+                  t={t}
+                />
                 <div className="flex items-center space-x-2">
                   <Checkbox id="save-data" checked={saveData} onCheckedChange={checked => setSaveData(checked === true)} />
                   <Label htmlFor="save-data" className="text-sm">
@@ -300,33 +158,19 @@ export default function PaymentForm () {
                   </Label>
                 </div>
               </div>
-
-              {/* Submit Button */}
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                 {t.processPayment} - {getAmount(paymentType, customAmount, selectedService, isMember)}€
               </Button>
             </form>
           </CardContent>
         </Card>
-
-        {/* Member Prices Modal */}
-        <Dialog open={showMemberModal} onOpenChange={setShowMemberModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-amber-500" />
-                {t.memberPrices}
-              </DialogTitle>
-              <DialogDescription className="text-base">{t.memberPricesWarning}</DialogDescription>
-            </DialogHeader>
-            <div className="flex gap-3 justify-end">
-              <Button variant="outline" onClick={() => setShowMemberModal(false)}>
-                {language === "es" ? "Cancelar" : "Cancel"}
-              </Button>
-              <Button onClick={confirmMemberPrices}>{t.understand}</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <MemberModal
+          open={showMemberModal}
+          onOpenChange={setShowMemberModal}
+          onConfirm={confirmMemberPrices}
+          onCancel={() => setShowMemberModal(false)}
+          t={t}
+        />
       </div>
     </div>
   );

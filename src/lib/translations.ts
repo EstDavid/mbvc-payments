@@ -17,6 +17,7 @@ const translations: Record<Language, any> = {
     membership: "Membresía Anual",
     memberPrices: "Precios de Miembro",
     memberPricesWarning: "Selecciona precios de miembro solo si tienes una membresía anual activa",
+    membershipDescription: "La membresía anual te da acceso a precios reducidos en todos nuestros servicios durante un año completo.",
     understand: "Entiendo",
     services: {
       monthly1: "Suscripción mensual, 1 entrenamiento por semana",
@@ -34,6 +35,7 @@ const translations: Record<Language, any> = {
     enterDescription: "Ingresa la descripción",
     phoneValidation: "Número de móvil español no válido (debe empezar por 6, 7 o 9 y tener 9 dígitos)",
     phoneFormat: "Formato: 6XX XXX XXX",
+    cancel: "Cancelar",
   },
   en: {
     title: "Montgó Beach Volley Club - Bizum payments",
@@ -50,6 +52,7 @@ const translations: Record<Language, any> = {
     membership: "Annual Membership",
     memberPrices: "Member Prices",
     memberPricesWarning: "Select member prices only if you have an active yearly membership",
+    membershipDescription: "Annual membership gives you access to reduced prices on all our services for a full year.",
     understand: "I Understand",
     services: {
       monthly1: "Monthly subscription, 1 training per week",
@@ -67,6 +70,7 @@ const translations: Record<Language, any> = {
     enterDescription: "Enter description",
     phoneValidation: "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
     phoneFormat: "Format: 6XX XXX XXX",
+    cancel: "Cancel"
   },
 };
 
