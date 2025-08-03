@@ -66,11 +66,7 @@ export default function PaymentForm () {
         if (validateSpanishPhone(cleanPhone)) {
           setPhoneError("");
         } else {
-          setPhoneError(
-            language === "es"
-              ? "Número de móvil español no válido (debe empezar por 6, 7 o 9 y tener 9 dígitos)"
-              : "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
-          );
+          setPhoneError(t.phoneValidation);
         }
       } else {
         setPhoneError("");
@@ -84,9 +80,9 @@ export default function PaymentForm () {
     // Validate phone before submission
     if (!validateSpanishPhone(formData.phone)) {
       setPhoneError(
-        language === "es"
-          ? "Por favor, introduce un número de móvil español válido"
-          : "Please enter a valid Spanish mobile number",
+        formData.phone.trim() === ""
+          ? t.phoneRequired
+          : t.phoneValidation
       );
       return;
     }

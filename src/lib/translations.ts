@@ -34,6 +34,7 @@ const translations: Record<Language, any> = {
     enterAmount: "Ingresa la cantidad",
     enterDescription: "Ingresa la descripción",
     phoneValidation: "Número de móvil español no válido (debe empezar por 6, 7 o 9 y tener 9 dígitos)",
+    phoneRequired: "Por favor, introduce un número de móvil español válido",
     phoneFormat: "Formato: 6XX XXX XXX",
     cancel: "Cancelar",
   },
@@ -69,6 +70,7 @@ const translations: Record<Language, any> = {
     enterAmount: "Enter amount",
     enterDescription: "Enter description",
     phoneValidation: "Invalid Spanish mobile number (must start with 6, 7, or 9 and have 9 digits)",
+    phoneRequired: "Please enter a valid Spanish mobile number",
     phoneFormat: "Format: 6XX XXX XXX",
     cancel: "Cancel"
   },
