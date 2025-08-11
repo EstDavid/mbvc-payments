@@ -1,21 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
+import { submitRedsysPayment } from "@/lib/actions/submit-redsys-payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Language, PaymentType } from "@/types/payment";
 import translations from "@/lib/translations";
-import { getAmount, getDescription, validateSpanishPhone } from "@/lib/payment-utils";
+import { getAmount, getDescription, validateSpanishPhone } from "@/lib/utils/payment";
 import PersonalInfoForm from "@/components/payment/PersonalInfoForm";
 import PaymentDetailsTabs from "@/components/payment/PaymentDetailsTabs";
 import MemberModal from "@/components/payment/MemberModal";
 import AmountSummary from "@/components/payment/AmountSummary";
 import LanguageSelector from "@/components/payment/LanguageSelector";
 import Image from "next/image";
-
-
+import RedsysRequestForm from "./redsys-request-form";
+import { RedsysRequestParameters } from "@/types/redsys";
 
 export default function PaymentForm () {
   const [language, setLanguage] = useState<Language>("es");
@@ -26,6 +27,7 @@ export default function PaymentForm () {
   const [customDescription, setCustomDescription] = useState("");
   const [saveData, setSaveData] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
+  const [bizumRequest, setBizumRequest] = useState<null | RedsysRequestParameters>(null);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -33,6 +35,7 @@ export default function PaymentForm () {
     email: "",
   });
   const [phoneError, setPhoneError] = useState("");
+  const bizumRequestFormRef = useRef<null | HTMLFormElement>(null);
 
   // Populate formData from localStorage on first render
   useEffect(() => {
@@ -55,6 +58,12 @@ export default function PaymentForm () {
     }
   }, []);
 
+  useEffect(() => {
+    if (bizumRequest && bizumRequestFormRef.current) {
+      bizumRequestFormRef.current.submit();
+    }
+  }, [bizumRequest]);
+
   const t = translations[language];
 
   const handleMemberToggle = (checked: boolean) => {
@@ -69,8 +78,6 @@ export default function PaymentForm () {
     setIsMember(true);
     setShowMemberModal(false);
   };
-
-
 
   const handlePhoneChange = (value: string) => {
     // Remove any non-digit characters
@@ -92,6 +99,9 @@ export default function PaymentForm () {
       }
     }
   };
+
+  const [isPending, startTransition] = useTransition();
+  const [bizumResult, setBizumResult] = useState<null | { success: boolean; message: string; }>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,15 +135,37 @@ export default function PaymentForm () {
       }
     }
 
-    // Handle form submission here
-    console.log("Form submitted:", {
-      ...formData,
-      phone: `+34${formData.phone}`,
-      paymentType,
-      amount: getAmount(paymentType, customAmount, selectedService, isMember),
-      description: getDescription(paymentType, customDescription, selectedService, language),
-      isMember,
-      saveData,
+    // Prepare data for Bizum payment as FormData
+    const paymentData = new FormData();
+    paymentData.append("name", formData.name);
+    paymentData.append("surname", formData.surname);
+    paymentData.append("phoneNumber", `${formData.phone}`);
+    paymentData.append("email", formData.email);
+    paymentData.append("paymentType", paymentType);
+    paymentData.append("amount", String(getAmount(paymentType, customAmount, selectedService, isMember)));
+    paymentData.append("productDescription", getDescription(paymentType, customDescription, selectedService, language));
+    paymentData.append("isMember", String(isMember));
+    paymentData.append("orderNumber", "000094");  // TODO: Remove order number from client
+
+    startTransition(async () => {
+      try {
+        const result = await submitRedsysPayment(paymentData);
+        if (result.valid) {
+          if (result.rtpRequestData) {
+            const { rtpRequestData } = result;
+            // TODO: Implement handling of transaction completed event
+            console.log({ rtpRequestData });
+          } else if (result.redirectParameters) {
+            setBizumRequest(result.redirectParameters);
+          }
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        // TODO: Improve error handling to account for validation errors and for user has no Bizum
+        console.log({ err });
+        setBizumResult({ success: false, message: "Error connecting to Bizum server." });
+      }
     });
   };
 
@@ -192,12 +224,18 @@ export default function PaymentForm () {
                   </Label>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                {t.processPayment} - {getAmount(paymentType, customAmount, selectedService, isMember)}€
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+                {isPending ? t.processingPayment || "Processing..." : `${t.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
               </Button>
+              {bizumResult && (
+                <div className={`mt-2 text-center ${bizumResult.success ? "text-green-600" : "text-red-600"}`}>
+                  {bizumResult.message}
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>
+        <RedsysRequestForm request={bizumRequest} formRef={bizumRequestFormRef} />
         <MemberModal
           open={showMemberModal}
           onOpenChange={setShowMemberModal}
