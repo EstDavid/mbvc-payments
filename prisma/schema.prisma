@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  Created
+  Pending
+  Paid
+  Cancelled
+  Returned
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  phoneNumber String   @unique
+  email       String
+  name        String
+  lastName    String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  orders      Order[]
+
+  @@map("users")
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  paymentMethod   String      @default("z") @db.Char(1)
+  transactionType String      @default("0") @db.Char(1)
+  amount          Decimal     @db.Decimal(10, 2)
+  status          OrderStatus @default(Created)
+  redsysResponse  String?
+  description     String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
