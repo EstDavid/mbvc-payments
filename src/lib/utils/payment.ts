@@ -12,6 +12,7 @@ export function validateSpanishPhone (phone: string): boolean {
 export function getAmount (paymentType: PaymentType, customAmount: string, selectedService: string, isMember: boolean): number {
   if (paymentType === "membership") return membershipPrice;
   if (paymentType === "custom") return Number.parseFloat(customAmount) || 0;
+  if (paymentType === "drop-in-class") return servicesPrices.dropIn[isMember ? "member" : "nonMember"];
   if (selectedService && servicesPrices[selectedService as keyof typeof servicesPrices]) {
     return servicesPrices[selectedService as keyof typeof servicesPrices][isMember ? "member" : "nonMember"];
   }
@@ -19,10 +20,11 @@ export function getAmount (paymentType: PaymentType, customAmount: string, selec
 }
 
 export function getDescription (paymentType: PaymentType, customDescription: string, selectedService: string, language: Language): string {
-  if (paymentType === "membership") return translations[language].membership;
+  if (paymentType === "membership") return `${translations[language].membership}. ${customDescription}`;
   if (paymentType === "custom") return customDescription;
+  if (paymentType === "drop-in-class") return `${translations[language].services.dropIn}. ${customDescription}`;
   if (selectedService) {
-    return translations[language].services[selectedService as keyof typeof translations[Language]["services"]];
+    return `${translations[language].services[selectedService as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
   }
   return "";
 }
