@@ -22,12 +22,17 @@ enum OrderStatus {
   Returned
 }
 
+enum Language {
+  en
+  es
+}
+
 model User {
   id          Int      @id @default(autoincrement())
-  phoneNumber String   @unique
+  phoneNumber String   @unique @map("phone_number")
   email       String
   name        String
-  lastName    String
+  lastName    String   @map("last_name")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   orders      Order[]
@@ -37,15 +42,16 @@ model User {
 
 model Order {
   id              Int         @id @default(autoincrement())
-  paymentMethod   String      @default("z") @db.Char(1)
-  transactionType String      @default("0") @db.Char(1)
+  paymentMethod   String      @default("z") @map("payment_method") @db.Char(1)
+  transactionType String      @default("0") @map("transaction_type") @db.Char(1)
   amount          Decimal     @db.Decimal(10, 2)
   status          OrderStatus @default(Created)
-  redsysResponse  String?
+  language        Language    @default(en)
+  redsysResponse  String?     @map("redsys_response")
   description     String
 
   user   User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int  @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

@@ -1,12 +1,18 @@
 import { prisma } from '@/lib/db';
 import { redsysRestEventSchema } from '@/lib/schemas/redsys';
+import { sendEmail } from '@/lib/services/email';
+import translations from '@/lib/translations';
 import { getRedsysResponseData } from '@/lib/utils/crypto';
 import { requireEnv } from '@/lib/utils/server';
+import { Language } from '@/types/payment';
 import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import z from 'zod';
 
 const redsysMerchantCode = requireEnv("REDSYS_MERCHANT_CODE");
+const emailFeatureFlag = requireEnv("EMAIL_FEATURE_FLAG");
+
+const useEmailFeature = emailFeatureFlag === 'TRUE';
 
 const isAuthorized = (code: string) => {
   return /^00\d{2}$/.test(code) && Number(code) <= 99;
@@ -33,6 +39,30 @@ export async function POST (req: NextRequest) {
       if (data.Ds_MerchantCode === redsysMerchantCode) {
         let status: OrderStatus;
         if (isAuthorized(responseCode)) {
+          if (useEmailFeature) {
+            const order = await prisma.order.findUnique({
+              where: { id: data.Ds_Order },
+              include: {
+                user: {
+                  select: { name: true, email: true }
+                }
+              }
+            });
+
+            if (order) {
+              sendEmail(
+                translations[order.language].emailText,
+                order.language as Language,
+                {
+                  to: order.user.email,
+                  name: order.user.name,
+                  orderNumber: order.id.toString(),
+                  description: order.description,
+                  amount: order.amount.toString()
+                }
+              );
+            }
+          }
           status = 'Paid';
         } else if (isCancelledOrReturned(responseCode)) {
           status = 'Returned';

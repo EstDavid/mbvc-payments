@@ -92,6 +92,7 @@ export async function submitRedsysPayment (formData: FormData) {
       amount: parseFloat(data.amount),
       description: data.productDescription,
       status: "Pending",
+      language: data.language,
       user: {
         connectOrCreate: {
           where: {
