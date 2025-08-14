@@ -94,10 +94,25 @@ export default function PaymentDetailsTabs ({
           onValueChange={value => setPaymentType(value as PaymentType)}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="drop-in-class">{t.dropInClasses}</TabsTrigger>
-            <TabsTrigger value="monthly-plans">{t.monthlyPlans}</TabsTrigger>
-            <TabsTrigger value="membership">{t.membership}</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-1 h-auto p-1">
+            <TabsTrigger
+              value="drop-in-class"
+              className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {t.dropInClasses}
+            </TabsTrigger>
+            <TabsTrigger
+              value="monthly-plans"
+              className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {t.monthlyPlans}
+            </TabsTrigger>
+            <TabsTrigger
+              value="membership"
+              className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {t.membership}
+            </TabsTrigger>
           </TabsList>
 
           {/* Drop-in classes Tab */}
@@ -145,14 +160,29 @@ export default function PaymentDetailsTabs ({
                   <SelectValue placeholder={t.selectService} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="monthly1">
-                    {t.services.monthly1} - {servicesPrices.monthly1[isMember ? "member" : "nonMember"]}€
+                  <SelectItem value="monthly1" className="max-w-full">
+                    <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
+                      <span className="text-sm font-medium">{t.services.monthly1}</span>
+                      <span className="text-sm font-bold text-[#156082]">
+                        {servicesPrices.monthly1[isMember ? "member" : "nonMember"]}€
+                      </span>
+                    </div>
                   </SelectItem>
-                  <SelectItem value="monthly2">
-                    {t.services.monthly2} - {servicesPrices.monthly2[isMember ? "member" : "nonMember"]}€
+                  <SelectItem value="monthly2" className="max-w-full">
+                    <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
+                      <span className="text-sm font-medium">{t.services.monthly2}</span>
+                      <span className="text-sm font-bold text-[#156082]">
+                        {servicesPrices.monthly2[isMember ? "member" : "nonMember"]}€
+                      </span>
+                    </div>
                   </SelectItem>
-                  <SelectItem value="monthly3">
-                    {t.services.monthly3} - {servicesPrices.monthly3[isMember ? "member" : "nonMember"]}€
+                  <SelectItem value="monthly3" className="max-w-full">
+                    <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
+                      <span className="text-sm font-medium">{t.services.monthly3}</span>
+                      <span className="text-sm font-bold text-[#156082]">
+                        {servicesPrices.monthly3[isMember ? "member" : "nonMember"]}€
+                      </span>
+                    </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
