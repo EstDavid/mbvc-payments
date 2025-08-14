@@ -354,8 +354,10 @@ export default function PaymentForm () {
 
   return (
     <div className="min-h-screen bg-white sm:px-4 py-2 sm:py-10">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto sm:static pr-4 sm:pr-0 sticky top-2 sm:top-0 z-20 bg-white pt-2 pb-1">
         <LanguageSelector language={language} setLanguage={setLanguage} />
+      </div>
+      <div className="max-w-2xl mx-auto">
         <Card className="shadow-none sm:shadow-2xl border-0">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
