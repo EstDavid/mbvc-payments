@@ -17,8 +17,16 @@ import LanguageSelector from "@/components/payment/LanguageSelector";
 import Image from "next/image";
 import RedsysRequestForm from "./redsys-request-form";
 import { RedsysRequestParameters } from "@/types/redsys";
+import ErrorModal from "../payment/ErrorModal";
+import ProcessingModal from "../payment/ProcessingModal";
+import ResultModal from "../payment/ResultModal";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ErrorTypes } from "@/types/error-handling";
 
 export default function PaymentForm () {
+  const router = useRouter();
+  const params = useSearchParams();
+  const pathname = usePathname();
   const [language, setLanguage] = useState<Language>("es");
   const [paymentType, setPaymentType] = useState<PaymentType>("predefined");
   const [isMember, setIsMember] = useState(false);
@@ -27,6 +35,12 @@ export default function PaymentForm () {
   const [customDescription, setCustomDescription] = useState("");
   const [saveData, setSaveData] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [followInstructions, setFollowInstructions] = useState(false);
+  const [pollTransaction, setPollTransaction] = useState<null | number>(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showResultModal, setShowResultModal] = useState(false);
   const [bizumRequest, setBizumRequest] = useState<null | RedsysRequestParameters>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -36,6 +50,31 @@ export default function PaymentForm () {
   });
   const [phoneError, setPhoneError] = useState("");
   const bizumRequestFormRef = useRef<null | HTMLFormElement>(null);
+
+  const [isPending, startTransition] = useTransition();
+  const [bizumResult, setBizumResult] = useState<null | { success: boolean; message: string; }>(null);
+
+
+  // Extract 'status' query parameter from URL (if present)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const status = params.get("status");
+      if (status) {
+        setBizumResult({
+          success: status === "success",
+          message: status === "success" ? t.paymentSuccess : t.paymentRejectedByUser,
+        });
+
+        // Remove 'status' from the URL without reloading the page
+        const newSearchParams = new URLSearchParams(params.toString());
+        newSearchParams.delete("status");
+        const newUrl =
+          pathname +
+          (newSearchParams.toString() ? `?${newSearchParams.toString()}` : "");
+        router.replace(newUrl);
+      }
+    }
+  }, []);
 
   // Populate formData from localStorage on first render
   useEffect(() => {
@@ -64,6 +103,77 @@ export default function PaymentForm () {
     }
   }, [bizumRequest]);
 
+
+  useEffect(() => {
+    if (pollTransaction) {
+      const startTime = Date.now();
+      const TIMEOUT = 1000 * 60 * 10; // 10 minute timeout
+
+      const interval = setInterval(async () => {
+        // Check if time limit exceeded
+        if (Date.now() - startTime > TIMEOUT) {
+          clearInterval(interval);
+          // Optionally notify user about timeout
+          setShowErrorModal(true);
+          setErrorMessage("Payment status check timed out. Please try again.");
+          return;
+        }
+
+        const res = await fetch(`/api/payment-status?orderNumber=${pollTransaction}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object' && 'status' in data) {
+            if (data.status === 'Paid') {
+              // Notify user
+              setIsProcessing(false);
+              setBizumResult({ success: true, message: t.paymentSuccess });
+              clearInterval(interval);
+            } else if (data.status === 'Cancelled') {
+              // Notify user
+              setIsProcessing(false);
+              setBizumResult({ success: false, message: t.paymentRejectedByUser });
+              clearInterval(interval);
+            }
+          }
+        }
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [pollTransaction]);
+
+  useEffect(() => {
+    if (bizumResult) {
+      const timeout = setTimeout(() => {
+        setBizumResult(null);
+      }, 10000);
+      return () => clearTimeout(timeout);
+    }
+  }, [bizumResult]);
+
+  // UseEffect to display modals depending on the result of the transacion
+  useEffect(() => {
+    if (bizumResult && bizumResult.success) {
+      setShowResultModal(true);
+    } else if (bizumResult && !bizumResult.success) {
+      setShowErrorModal(true);
+    } else if (!bizumResult) {
+      if (showErrorModal) {
+        setShowErrorModal(false);
+      }
+      if (showResultModal) {
+        setShowResultModal(false);
+      }
+    }
+  }, [bizumResult]);
+
+
+  // Reset the followInstructions boolean when isProcessing becomes false
+  useEffect(() => {
+    if (!isProcessing && followInstructions) {
+      setFollowInstructions(false);
+    }
+  }, [isProcessing]);
   const t = translations[language];
 
   const handleMemberToggle = (checked: boolean) => {
@@ -100,11 +210,11 @@ export default function PaymentForm () {
     }
   };
 
-  const [isPending, startTransition] = useTransition();
-  const [bizumResult, setBizumResult] = useState<null | { success: boolean; message: string; }>(null);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    setIsProcessing(true);
+
 
     // Validate phone before submission
     if (!validateSpanishPhone(formData.phone)) {
@@ -145,43 +255,68 @@ export default function PaymentForm () {
     paymentData.append("amount", String(getAmount(paymentType, customAmount, selectedService, isMember)));
     paymentData.append("productDescription", getDescription(paymentType, customDescription, selectedService, language));
     paymentData.append("isMember", String(isMember));
-    paymentData.append("orderNumber", "000094");  // TODO: Remove order number from client
 
     startTransition(async () => {
       try {
         const result = await submitRedsysPayment(paymentData);
-        if (result.valid) {
-          if (result.rtpRequestData) {
-            const { rtpRequestData } = result;
-            // TODO: Implement handling of transaction completed event
-            console.log({ rtpRequestData });
-          } else if (result.redirectParameters) {
-            setBizumRequest(result.redirectParameters);
-          }
+
+        const isRtpTransaction = result.valid && result.rtpRequestData !== undefined;
+        const isRedirectTransaction = result.valid && result.redirectParameters !== undefined;
+        const isNotValidTransaction = !result.valid;
+
+        if (isRtpTransaction) {
+          const { rtpRequestData } = result;
+          setFollowInstructions(true);
+          setPollTransaction(rtpRequestData.Ds_Order);
         } else {
-          throw new Error(result.message);
+          setIsProcessing(false);
+
+          if (isRedirectTransaction) {
+            setBizumRequest(result.redirectParameters);
+          } else if (isNotValidTransaction) {
+            const { errorType } = result;
+            if (errorType === ErrorTypes.NoBizumError) {
+              setBizumResult({
+                success: false,
+                message: t.userHasNoBizum
+              });
+            } else if (errorType === ErrorTypes.PaymentGatewayError) {
+              setBizumResult({
+                success: false,
+                message: `${t.errorGateway}\n${result.message}`
+              });
+            }
+          } else {
+            // Handle any other errors with the catch
+            throw new Error(result.message);
+          }
         }
       } catch (err) {
-        // TODO: Improve error handling to account for validation errors and for user has no Bizum
-        console.log({ err });
-        setBizumResult({ success: false, message: "Error connecting to Bizum server." });
+        if (isProcessing) {
+          setIsProcessing(false);
+        }
+        console.error({ err });
+        setBizumResult({
+          success: false,
+          message: "Error connecting to Bizum server."
+        });
       }
     });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4">
+    <div className="min-h-screen bg-white sm:px-4 py-2 sm:py-10">
       <div className="max-w-2xl mx-auto">
         <LanguageSelector language={language} setLanguage={setLanguage} />
-        <Card>
+        <Card className="shadow-none sm:shadow-2xl border-0">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
               <Image src="/logo.png" alt="Montgó Beach Volley Club Logo" width={200} height={100} className="h-16 w-auto" />
             </div>
-            <CardTitle className="text-2xl font-bold text-blue-900">{t.title}</CardTitle>
+            <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
             <CardDescription>{t.description}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <form onSubmit={handleSubmit} className="space-y-6">
               <PersonalInfoForm
                 formData={formData}
@@ -224,7 +359,7 @@ export default function PaymentForm () {
                   </Label>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isPending}>
+              <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a]" disabled={isPending}>
                 {isPending ? t.processingPayment || "Processing..." : `${t.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
               </Button>
               {bizumResult && (
@@ -241,6 +376,29 @@ export default function PaymentForm () {
           onOpenChange={setShowMemberModal}
           onConfirm={confirmMemberPrices}
           onCancel={() => setShowMemberModal(false)}
+          t={t}
+        />
+        <ErrorModal
+          open={showErrorModal}
+          onOpenChange={(open) => {
+            setShowErrorModal(open);
+            if (!open) {
+              setErrorMessage("");
+            }
+          }}
+          onConfirm={() => {
+            setShowErrorModal(false);
+            setErrorMessage("");
+          }}
+          t={t}
+          message={bizumResult?.message}
+        />
+        <ProcessingModal isProcessing={isProcessing} followInstructions={followInstructions} t={t} />
+        <ResultModal
+          open={showResultModal}
+          success={bizumResult?.success}
+          onOpenChange={setShowResultModal}
+          onConfirm={() => setShowResultModal(false)}
           t={t}
         />
       </div>
