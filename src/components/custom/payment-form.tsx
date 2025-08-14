@@ -29,11 +29,12 @@ export default function PaymentForm () {
   const params = useSearchParams();
   const pathname = usePathname();
   const [language, setLanguage] = useState<Language>(Language.es);
-  const [paymentType, setPaymentType] = useState<PaymentType>("predefined");
+  const [paymentType, setPaymentType] = useState<PaymentType>("drop-in-class");
   const [isMember, setIsMember] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [customAmount, setCustomAmount] = useState("");
   const [customDescription, setCustomDescription] = useState("");
+  const [isCustomAmount, setIsCustomAmount] = useState(false);
   const [saveData, setSaveData] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -345,15 +346,17 @@ export default function PaymentForm () {
                 <h3 className="text-lg font-semibold text-gray-900">{t.paymentDetails}</h3>
                 <PaymentDetailsTabs
                   paymentType={paymentType}
-                  setPaymentType={setPaymentType}
                   isMember={isMember}
-                  handleMemberToggle={handleMemberToggle}
                   selectedService={selectedService}
-                  setSelectedService={setSelectedService}
                   customAmount={customAmount}
-                  setCustomAmount={setCustomAmount}
                   customDescription={customDescription}
+                  isCustomAmount={isCustomAmount}
+                  setPaymentType={setPaymentType}
+                  handleMemberToggle={handleMemberToggle}
+                  setSelectedService={setSelectedService}
+                  setCustomAmount={setCustomAmount}
                   setCustomDescription={setCustomDescription}
+                  setIsCustomAmount={setIsCustomAmount}
                   t={t}
                 />
                 <AmountSummary
