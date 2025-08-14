@@ -1,7 +1,7 @@
 export enum ErrorTypes {
-  RedsysResponseError = 'Redsys Response Error',
-  RedsysValidationError = 'Redsys Response Error',
-  ValidationError = 'Form Validation Error',
+  FormValidationError = 'Form Validation Error',
+  ServerValidationError = 'Server Validation Error',
+  PaymentGatewayError = 'Error in payment gateway',
   NoBizumError = 'User does not have Bizum',
   NetworkError = 'Network Error',
   UnknownError = 'Unknown Error'
