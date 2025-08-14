@@ -13,3 +13,15 @@ export function requireEnv (name: string): string {
   }
   return value;
 }
+
+export function addQueryParameterToAbsoluteUrl (url: string, paramName: string, paramValue: string): string {
+  try {
+    const urlObj = new URL(url);
+    urlObj.searchParams.set(paramName, paramValue);
+    return urlObj.toString();
+  } catch (error) {
+    // If URL is invalid, return the original URL
+    console.error('Invalid URL provided:', url);
+    return url;
+  }
+}

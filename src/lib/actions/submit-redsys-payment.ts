@@ -1,7 +1,7 @@
 "use server";
 import { DecodedResponseValidationError, EncodedResponseValidationError, getZodIssues, RedsysGatewayError } from '@/lib/error-handling';
 import { paymentSchema, redsysCheckRtpResponseSchema, redsysRestResponseSchema } from '@/lib/schemas/redsys';
-import { formDataToObject, requireEnv } from '@/lib/utils/server';
+import { addQueryParameterToAbsoluteUrl, formDataToObject, requireEnv } from '@/lib/utils/server';
 import { checkRtpUsuario, sendRtpRequest } from '@/lib/services/redsys';
 import { RedsysRequestParameters, RedsysTransactionParameters } from '@/types/redsys';
 import { createMerchantParameters, createMerchantSignature, getRedsysResponseData } from '../utils/crypto';
@@ -26,10 +26,23 @@ function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, or
     amount,
     productDescription,
     memberName,
+    language
   } = paymentData;
 
   const amountCents = amount ? Math.round(parseFloat(amount) * 100).toString() : '0';
   const isTestEnvironment = /sis-t/.test(apiAddress);
+
+  const dsMerchantUrlOkWithParams = addQueryParameterToAbsoluteUrl(
+    DS_MERCHANT_URLOK,
+    'language',
+    language
+  );
+
+  const dsMerchantUrlKoWithParams = addQueryParameterToAbsoluteUrl(
+    DS_MERCHANT_URLKO,
+    'language',
+    language
+  );
 
   const transactionParameters: RedsysTransactionParameters = {
     DS_MERCHANT_PAYMETHODS: "z",
@@ -44,8 +57,8 @@ function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, or
     DS_MERCHANT_TERMINAL,
     DS_MERCHANT_PRODUCTDESCRIPTION: productDescription,
     DS_MERCHANT_TITULAR: memberName,
-    DS_MERCHANT_URLOK,
-    DS_MERCHANT_URLKO
+    DS_MERCHANT_URLOK: dsMerchantUrlOkWithParams,
+    DS_MERCHANT_URLKO: dsMerchantUrlKoWithParams
   };
 
   const Ds_MerchantParameters = createMerchantParameters(transactionParameters);

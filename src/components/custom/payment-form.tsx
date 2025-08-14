@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Language, PaymentType } from "@/types/payment";
+import type { PaymentType } from "@/types/payment";
+import { Language } from "@/types/payment";
 import translations from "@/lib/translations";
 import { getAmount, getDescription, validateSpanishPhone } from "@/lib/utils/payment";
 import PersonalInfoForm from "@/components/payment/PersonalInfoForm";
@@ -27,7 +28,7 @@ export default function PaymentForm () {
   const router = useRouter();
   const params = useSearchParams();
   const pathname = usePathname();
-  const [language, setLanguage] = useState<Language>("es");
+  const [language, setLanguage] = useState<Language>(Language.es);
   const [paymentType, setPaymentType] = useState<PaymentType>("predefined");
   const [isMember, setIsMember] = useState(false);
   const [selectedService, setSelectedService] = useState("");
@@ -59,6 +60,12 @@ export default function PaymentForm () {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const status = params.get("status");
+      const languageParam = params.get("language");
+      if (languageParam && Object.values(Language).includes(languageParam as Language)) {
+        if (languageParam !== language)
+          setLanguage(languageParam as Language);
+      }
+
       if (status) {
         setBizumResult({
           success: status === "success",
@@ -68,6 +75,7 @@ export default function PaymentForm () {
         // Remove 'status' from the URL without reloading the page
         const newSearchParams = new URLSearchParams(params.toString());
         newSearchParams.delete("status");
+        newSearchParams.delete("language");
         const newUrl =
           pathname +
           (newSearchParams.toString() ? `?${newSearchParams.toString()}` : "");
@@ -255,6 +263,7 @@ export default function PaymentForm () {
     paymentData.append("amount", String(getAmount(paymentType, customAmount, selectedService, isMember)));
     paymentData.append("productDescription", getDescription(paymentType, customDescription, selectedService, language));
     paymentData.append("isMember", String(isMember));
+    paymentData.append("language", language);
 
     startTransition(async () => {
       try {
