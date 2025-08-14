@@ -40,16 +40,29 @@ const translations: Record<Language, any> = {
     phoneFormat: "Formato: 6XX XXX XXX",
     cancel: "Cancelar",
     followInstructions: 'Sigue las instrucciones del proveedor de Bizum en tu teléfono',
-    paymentSuccess: "Pago realizado con éxito!",
+    paymentSuccess: "¡Pago realizado con éxito!",
     paymentRejectedByUser: "Pago cancelado por el usuario",
     confirm: "De acuerdo",
     processing: "Procesando pago",
     processingDescription: "Por favor espera mientras procesamos tu pago",
     userHasNoBizum: "El número de teléfono no tiene Bizum configurado",
-    errorOccurred: "Oops! Ha ocurrido un error",
+    errorOccurred: "¡Vaya! Ha ocurrido un error",
     errorProcessingPayment: "Ha ocurrido un error al procesar el pago. Si el error persiste, contacta con el club",
     errorGateway: "Error en la pasarela de pago, vuelve a probar pasados unos minutos",
-    validationError: "Error en algún dato. Revisa el formulario"
+    validationError: "Error en algún dato. Revisa el formulario",
+    emailText: {
+      subject: "Recibo de pago Bizum",
+      paymentReceipt: "Recibo de pago",
+      bizumPaymentReceipt: "Recibo de Pago Bizum",
+      hello: "Hola ",
+      thankYouHereIsReceipt: ", gracias por tu pago. Aquí tienes tu recibo:",
+      orderNumber: "Número de pedido:",
+      description: "Descripción:",
+      amount: "Cantidad:",
+      paidWith: "Pagado con",
+      thankYouForTrustingUs: "Gracias por confiar en Montgó Beach Volley Club",
+      anyQuestions: "Si tienes alguna pregunta, no dudes en contactarnos"
+    }
   },
   en: {
     title: "Montgó Beach Volley Club - Bizum payments",
@@ -98,7 +111,20 @@ const translations: Record<Language, any> = {
     errorOccurred: "Oops! An error occurred",
     errorProcessingPayment: "An error occurred processing the payment. If the payment persists, contact the club",
     errorGateway: "Error payment gateway, try again after a few minutes",
-    validationError: "Error in the data entered. Check the form"
+    validationError: "Error in the data entered. Check the form",
+    emailText: {
+      subject: "Bizum payment receipt",
+      paymentReceipt: "Payment receipt",
+      bizumPaymentReceipt: "Bizum Payment Receipt",
+      hello: "Hello ",
+      thankYouHereIsReceipt: ", thank you for your payment. Here is your receipt:",
+      orderNumber: "Order number:",
+      description: "Description:",
+      amount: "Amount:",
+      paidWith: "Paid with",
+      thankYouForTrustingUs: "Thank you for trusting in Montgó Beach Volley Club",
+      anyQuestions: "If you have any questions, don't hesitate to contact us"
+    }
   },
 };
 
