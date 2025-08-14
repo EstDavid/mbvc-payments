@@ -15,6 +15,7 @@ interface PaymentDetailsTabsProps {
   customAmount: string;
   customDescription: string;
   isCustomAmount: boolean;
+  fieldErrors: Record<string, string>;
   setPaymentType: (type: PaymentType) => void;
   handleMemberToggle: (checked: boolean) => void;
   setSelectedService: (service: string) => void;
@@ -31,6 +32,7 @@ export default function PaymentDetailsTabs ({
   customAmount,
   customDescription,
   isCustomAmount,
+  fieldErrors,
   setPaymentType,
   handleMemberToggle,
   setSelectedService,
@@ -73,8 +75,10 @@ export default function PaymentDetailsTabs ({
               value={customAmount}
               onChange={e => setCustomAmount(e.target.value)}
               placeholder={t.enterAmount}
+              className={fieldErrors.amount ? "border-red-500" : ""}
               required
             />
+            {fieldErrors.amount && <p className="text-xs text-red-500">{fieldErrors.amount}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="custom-description">{t.description} *</Label>
@@ -83,8 +87,10 @@ export default function PaymentDetailsTabs ({
               value={customDescription}
               onChange={e => setCustomDescription(e.target.value)}
               placeholder={t.enterDescription}
+              className={fieldErrors.productDescription ? "border-red-500" : ""}
               required
             />
+            {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
           </div>
         </div>
       ) : (
@@ -138,7 +144,9 @@ export default function PaymentDetailsTabs ({
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
                 placeholder={t.enterDescription}
+                className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
+              {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
             </div>
           </TabsContent>
 
@@ -155,7 +163,7 @@ export default function PaymentDetailsTabs ({
             {/* Monthly Plans Selection */}
             <div className="space-y-4">
               <Label>{t.selectService} *</Label>
-              <Select value={selectedService} onValueChange={setSelectedService}>
+              <Select value={selectedService} onValueChange={setSelectedService} required>
                 <SelectTrigger>
                   <SelectValue placeholder={t.selectService} />
                 </SelectTrigger>
@@ -192,7 +200,9 @@ export default function PaymentDetailsTabs ({
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
                 placeholder={t.enterDescription}
+                className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
+              {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
             </div>
           </TabsContent>
 
@@ -214,7 +224,9 @@ export default function PaymentDetailsTabs ({
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
                 placeholder={t.enterDescription}
+                className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
+              {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
             </div>
           </TabsContent>
         </Tabs>

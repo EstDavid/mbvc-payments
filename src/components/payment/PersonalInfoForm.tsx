@@ -10,6 +10,7 @@ export interface PersonalInfoFormProps {
     email: string;
   };
   phoneError: string;
+  fieldErrors: Record<string, string>;
   onChange: (field: string, value: string) => void;
   onPhoneChange: (value: string) => void;
   translations: {
@@ -22,7 +23,7 @@ export interface PersonalInfoFormProps {
   };
 }
 
-export default function PersonalInfoForm({ formData, phoneError, onChange, onPhoneChange, translations }: PersonalInfoFormProps) {
+export default function PersonalInfoForm ({ formData, phoneError, fieldErrors, onChange, onPhoneChange, translations }: PersonalInfoFormProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-900">{translations.personalInfo}</h3>
@@ -34,7 +35,9 @@ export default function PersonalInfoForm({ formData, phoneError, onChange, onPho
             value={formData.name}
             onChange={e => onChange("name", e.target.value)}
             required
+            className={fieldErrors.name ? "border-red-500" : ""}
           />
+          {fieldErrors.name && <p className="text-xs text-red-500">{fieldErrors.name}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="surname">{translations.surname} *</Label>
@@ -43,7 +46,9 @@ export default function PersonalInfoForm({ formData, phoneError, onChange, onPho
             value={formData.surname}
             onChange={e => onChange("surname", e.target.value)}
             required
+            className={fieldErrors.surname ? "border-red-500" : ""}
           />
+          {fieldErrors.surname && <p className="text-xs text-red-500">{fieldErrors.surname}</p>}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -59,12 +64,13 @@ export default function PersonalInfoForm({ formData, phoneError, onChange, onPho
               value={formData.phone}
               onChange={e => onPhoneChange(e.target.value)}
               placeholder="612345678"
-              className="rounded-l-none"
+              className={`rounded-l-none ${phoneError || fieldErrors.phoneNumber ? "border-red-500" : ""}`}
               required
             />
           </div>
           <p className="text-xs text-gray-500">{translations.phoneFormat}</p>
           {phoneError && <p className="text-xs text-red-500">{phoneError}</p>}
+          {fieldErrors.phoneNumber && <p className="text-xs text-red-500">{fieldErrors.phoneNumber}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">{translations.email} *</Label>
@@ -74,7 +80,9 @@ export default function PersonalInfoForm({ formData, phoneError, onChange, onPho
             value={formData.email}
             onChange={e => onChange("email", e.target.value)}
             required
+            className={fieldErrors.email ? "border-red-500" : ""}
           />
+          {fieldErrors.email && <p className="text-xs text-red-500">{fieldErrors.email}</p>}
         </div>
       </div>
     </div>

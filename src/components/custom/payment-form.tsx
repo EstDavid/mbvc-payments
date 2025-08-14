@@ -51,6 +51,7 @@ export default function PaymentForm () {
     email: "",
   });
   const [phoneError, setPhoneError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const bizumRequestFormRef = useRef<null | HTMLFormElement>(null);
 
   const [isPending, startTransition] = useTransition();
@@ -206,6 +207,15 @@ export default function PaymentForm () {
     if (cleanPhone.length <= 9) {
       setFormData({ ...formData, phone: cleanPhone });
 
+      // Clear field errors for phone when user starts typing
+      if (fieldErrors.phoneNumber) {
+        setFieldErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.phoneNumber;
+          return newErrors;
+        });
+      }
+
       // Validate if phone has content
       if (cleanPhone.length > 0) {
         if (validateSpanishPhone(cleanPhone)) {
@@ -224,6 +234,8 @@ export default function PaymentForm () {
 
     setIsProcessing(true);
 
+    // Clear previous field errors
+    setFieldErrors({});
 
     // Validate phone before submission
     if (!validateSpanishPhone(formData.phone)) {
@@ -232,6 +244,17 @@ export default function PaymentForm () {
           ? t.phoneRequired
           : t.phoneValidation
       );
+      setIsProcessing(false);
+      return;
+    }
+
+    // Validate that a monthly plan has been selected
+    if (paymentType === 'monthly-plans' && !selectedService) {
+      setIsProcessing(false);
+      setBizumResult({
+        success: false,
+        message: "Select a monthly plan"
+      });
       return;
     }
 
@@ -285,7 +308,16 @@ export default function PaymentForm () {
             setBizumRequest(result.redirectParameters);
           } else if (isNotValidTransaction) {
             const { errorType } = result;
-            if (errorType === ErrorTypes.NoBizumError) {
+            if (errorType === ErrorTypes.FormValidationError) {
+              // Handle field-specific validation errors
+              setBizumResult({
+                success: false,
+                message: t.validationError
+              });
+              if (result.errors) {
+                setFieldErrors(result.errors);
+              }
+            } else if (errorType === ErrorTypes.NoBizumError) {
               setBizumResult({
                 success: false,
                 message: t.userHasNoBizum
@@ -294,6 +326,12 @@ export default function PaymentForm () {
               setBizumResult({
                 success: false,
                 message: `${t.errorGateway}\n${result.message}`
+              });
+            } else {
+              // Handle any other validation errors
+              setBizumResult({
+                success: false,
+                message: result.message || t.errorGateway
               });
             }
           } else {
@@ -331,7 +369,18 @@ export default function PaymentForm () {
               <PersonalInfoForm
                 formData={formData}
                 phoneError={phoneError}
-                onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+                fieldErrors={fieldErrors}
+                onChange={(field, value) => {
+                  setFormData({ ...formData, [field]: value });
+                  // Clear field error when user starts typing
+                  if (fieldErrors[field]) {
+                    setFieldErrors(prev => {
+                      const newErrors = { ...prev };
+                      delete newErrors[field];
+                      return newErrors;
+                    });
+                  }
+                }}
                 onPhoneChange={handlePhoneChange}
                 translations={{
                   personalInfo: t.personalInfo,
@@ -351,11 +400,32 @@ export default function PaymentForm () {
                   customAmount={customAmount}
                   customDescription={customDescription}
                   isCustomAmount={isCustomAmount}
+                  fieldErrors={fieldErrors}
                   setPaymentType={setPaymentType}
                   handleMemberToggle={handleMemberToggle}
                   setSelectedService={setSelectedService}
-                  setCustomAmount={setCustomAmount}
-                  setCustomDescription={setCustomDescription}
+                  setCustomAmount={(amount) => {
+                    setCustomAmount(amount);
+                    // Clear field error when user starts typing
+                    if (fieldErrors.amount) {
+                      setFieldErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors.amount;
+                        return newErrors;
+                      });
+                    }
+                  }}
+                  setCustomDescription={(description) => {
+                    setCustomDescription(description);
+                    // Clear field error when user starts typing
+                    if (fieldErrors.productDescription) {
+                      setFieldErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors.productDescription;
+                        return newErrors;
+                      });
+                    }
+                  }}
                   setIsCustomAmount={setIsCustomAmount}
                   t={t}
                 />

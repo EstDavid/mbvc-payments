@@ -23,8 +23,8 @@ export const paymentSchema = z.object({
     .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount")
     .refine(val => parseFloat(val) >= 1, { message: "Amount must be 1 euro or above" }),
   productDescription: z.preprocess(trimDescriptionString, z.string('Invalid product description').min(1)),
-  name: z.preprocess(trimDescriptionString, z.string('Invalid member name').min(1)),
-  surname: z.preprocess(trimDescriptionString, z.string('Invalid member surname').min(1)),
+  name: z.preprocess(trimDescriptionString, z.string('Invalid member name').min(4)),
+  surname: z.preprocess(trimDescriptionString, z.string('Invalid member surname').min(4)),
   email: z.email("Invalid email address"),
   language: z.enum(['es', 'en'])
 }).transform((payment) => {

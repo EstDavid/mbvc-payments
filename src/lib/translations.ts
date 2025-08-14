@@ -12,8 +12,9 @@ const translations: Record<Language, any> = {
     email: "Correo Electrónico",
     paymentDetails: "Detalles del Pago",
     paymentType: "Tipo de Pago",
-    dropInClasses: "Clases sueltas",
+    dropInClasses: "Clase suelta",
     monthlyPlans: "Planes mensuales",
+    selectMonthlyPlan: "Selecciona un plan mensual",
     customAmount: "Cantidad Personalizada",
     membership: "Membresía Anual",
     memberPrices: "¿Eres miembro del club?",
@@ -38,7 +39,7 @@ const translations: Record<Language, any> = {
     phoneRequired: "Por favor, introduce un número de móvil español válido",
     phoneFormat: "Formato: 6XX XXX XXX",
     cancel: "Cancelar",
-    followInstructions: 'Sigue las instrucciones del proveedor de Bizum en tu teléfono ',
+    followInstructions: 'Sigue las instrucciones del proveedor de Bizum en tu teléfono',
     paymentSuccess: "Pago realizado con éxito!",
     paymentRejectedByUser: "Pago cancelado por el usuario",
     confirm: "De acuerdo",
@@ -47,7 +48,8 @@ const translations: Record<Language, any> = {
     userHasNoBizum: "El número de teléfono no tiene Bizum configurado",
     errorOccurred: "Oops! Ha ocurrido un error",
     errorProcessingPayment: "Ha ocurrido un error al procesar el pago. Si el error persiste, contacta con el club",
-    errorGateway: "Error en la pasarela de pago, vuelve a probar pasados unos minutos"
+    errorGateway: "Error en la pasarela de pago, vuelve a probar pasados unos minutos",
+    validationError: "Error en algún dato. Revisa el formulario"
   },
   en: {
     title: "Montgó Beach Volley Club - Bizum payments",
@@ -59,8 +61,9 @@ const translations: Record<Language, any> = {
     email: "Email Address",
     paymentDetails: "Payment Details",
     paymentType: "Payment Type",
-    dropInClasses: "Clases sueltas",
-    monthlyPlans: "Planes mensuales",
+    dropInClasses: "Drop-in class",
+    monthlyPlans: "Monthly plans",
+    selectMonthlyPlan: "Select a monthly plan",
     customAmount: "Custom Amount",
     membership: "Annual Membership",
     memberPrices: "Are you a club member?",
@@ -85,7 +88,7 @@ const translations: Record<Language, any> = {
     phoneRequired: "Please enter a valid Spanish mobile number",
     phoneFormat: "Format: 6XX XXX XXX",
     cancel: "Cancel",
-    followInstructions: 'Follow the instructions from the Bizum provicer on your phone',
+    followInstructions: 'Follow the instructions from the Bizum provider on your phone',
     paymentSuccess: "Payment was successful!",
     paymentRejectedByUser: "Payment cancelled by user",
     confirm: "Ok",
@@ -94,7 +97,8 @@ const translations: Record<Language, any> = {
     userHasNoBizum: "The phone number does not have Bizum configured",
     errorOccurred: "Oops! An error occurred",
     errorProcessingPayment: "An error occurred processing the payment. If the payment persists, contact the club",
-    errorGateway: "Error payment gateway, try again after a few minutes"
+    errorGateway: "Error payment gateway, try again after a few minutes",
+    validationError: "Error in the data entered. Check the form"
   },
 };
 
