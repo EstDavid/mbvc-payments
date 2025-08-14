@@ -443,7 +443,8 @@ export default function PaymentForm () {
                   </Label>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a]" disabled={isPending}>
+              <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a] h-auto py-3" disabled={isPending}>
+                <Image src="/bizum-logo.svg" alt="Bizum Logo" width={200} height={60} className="h-8 w-auto mr-4" />
                 {isPending ? t.processingPayment || "Processing..." : `${t.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
               </Button>
               {bizumResult && (
