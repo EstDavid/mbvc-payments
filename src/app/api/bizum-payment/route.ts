@@ -65,7 +65,10 @@ export async function POST (req: NextRequest) {
               }
             });
 
+            console.log({ order });
+
             if (order && order.email) {
+              console.log('Sending order');
               sendEmail(
                 translations[order.language].emailText as Record<Language, string>,
                 order.language as Language,
