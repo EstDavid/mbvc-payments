@@ -83,6 +83,7 @@ export async function submitRedsysPayment (formData: FormData) {
 
   const validatedFields = paymentSchema.safeParse(paymentData);
   if (!validatedFields.success) {
+    console.log(validatedFields);
     return {
       valid: false,
       errors: getZodIssues(validatedFields.error),

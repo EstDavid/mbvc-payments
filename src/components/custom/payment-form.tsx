@@ -288,7 +288,7 @@ export default function PaymentForm () {
     paymentData.append("name", formData.name);
     paymentData.append("surname", formData.surname);
     paymentData.append("phoneNumber", `${formData.phone}`);
-    if (useEmailFeature) {
+    if (useEmailFeature && formData.email) {
       paymentData.append("email", formData.email);
     }
     paymentData.append("paymentType", paymentType);
@@ -509,9 +509,13 @@ export default function PaymentForm () {
           open={showErrorModal}
           onOpenChange={(open) => {
             setShowErrorModal(open);
+            if (!open) {
+              setBizumResult(null);
+            }
           }}
           onConfirm={() => {
             setShowErrorModal(false);
+            setBizumResult(null);
           }}
           t={flatT}
           message={bizumResult?.message}
