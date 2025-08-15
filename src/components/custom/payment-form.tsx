@@ -136,6 +136,7 @@ export default function PaymentForm () {
           return;
         }
 
+        console.log('polling');
         const res = await fetch(`/api/payment-status?orderNumber=${pollTransaction}`);
         if (res.ok) {
           const data = await res.json();
@@ -143,11 +144,13 @@ export default function PaymentForm () {
             if (data.status === 'Paid') {
               // Notify user
               setIsProcessing(false);
+              setPollTransaction(null);
               setBizumResult({ success: true, message: flatT.paymentSuccess });
               clearInterval(interval);
             } else if (data.status === 'Cancelled') {
               // Notify user
               setIsProcessing(false);
+              setPollTransaction(null);
               setBizumResult({ success: false, message: flatT.paymentRejectedByUser });
               clearInterval(interval);
             }
@@ -155,7 +158,10 @@ export default function PaymentForm () {
         }
       }, 3000);
 
-      return () => clearInterval(interval);
+      return () => {
+        setPollTransaction(null);
+        clearInterval(interval);
+      };
     }
   }, [pollTransaction, flatT]);
 
@@ -348,9 +354,7 @@ export default function PaymentForm () {
           }
         }
       } catch (err) {
-        if (isProcessing) {
-          setIsProcessing(false);
-        }
+        setIsProcessing(false);
         console.error({ err });
         setBizumResult({
           success: false,
