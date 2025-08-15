@@ -29,7 +29,7 @@ export default function PaymentForm () {
   const params = useSearchParams();
   const pathname = usePathname();
   const [language, setLanguage] = useState<Language>(Language.es);
-  const [paymentType, setPaymentType] = useState<PaymentType>("drop-in-class");
+  const [paymentType, setPaymentType] = useState<PaymentType>("monthly-plans");
   const [isMember, setIsMember] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [customAmount, setCustomAmount] = useState("");

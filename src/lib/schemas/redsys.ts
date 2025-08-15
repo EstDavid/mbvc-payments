@@ -51,9 +51,9 @@ export const redsysRestResponseSchema = z.object({
   Ds_TransactionType: z.string(),
   Ds_SecurePayment: z.string().nullish(),
   Ds_Language: z.string(),
-  Ds_MerchantData: z.string(),
-  Ds_Bizum_IdOper: z.string(),
-  Ds_ProcessedPayMethod: z.string(),
+  Ds_MerchantData: z.string().nullish(),
+  Ds_Bizum_IdOper: z.string().nullish(),
+  Ds_ProcessedPayMethod: z.string().nullish(),
   Ds_RtpResponse: z.string().nullish(),
   Ds_RtpDescription: z.string().nullish()
 });
