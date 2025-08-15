@@ -175,6 +175,7 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
           </html>
         `
     });
+    console.log({ info });
   } catch (error) {
     console.error(error);
   }
