@@ -178,5 +178,4 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
   } catch (error) {
     console.error(error);
   }
-
 }

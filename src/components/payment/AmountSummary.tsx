@@ -3,7 +3,7 @@ import React from "react";
 interface AmountSummaryProps {
   amount: number;
   description: string;
-  t: any;
+  t: Record<string, string>;
 }
 
 export default function AmountSummary ({ amount, description, t }: AmountSummaryProps) {

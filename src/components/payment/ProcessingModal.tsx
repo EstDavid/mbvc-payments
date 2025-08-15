@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 interface ErrorModalProps {
   isProcessing: boolean;
   followInstructions: boolean;
-  t: Record<string, any>;
+  t: Record<string, string>;
 }
 
 export default function ProcessingModal ({ isProcessing, followInstructions, t }: ErrorModalProps) {
