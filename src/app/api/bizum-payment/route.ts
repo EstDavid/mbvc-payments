@@ -52,42 +52,42 @@ export async function POST (req: NextRequest) {
       if (data.Ds_MerchantCode === redsysMerchantCode) {
         let status: OrderStatus;
         if (isAuthorized(responseCode)) {
-          if (useEmailFeature) {
-            const { sendEmail } = await import('@/lib/services/email');
-
-            const order = await prisma.order.findUnique({
-              where: { id: data.Ds_Order },
-              include: {
-                user: {
-                  select: { name: true }
-                }
-              }
-            });
-
-            if (order && order.email) {
-              sendEmail(
-                translations[order.language].emailText as Record<Language, string>,
-                order.language as Language,
-                {
-                  to: order.email,
-                  name: order.user.name,
-                  orderNumber: order.id.toString(),
-                  description: order.description,
-                  amount: order.amount.toString()
-                }
-              );
-            }
-          }
           status = 'Paid';
         } else if (isCancelledOrReturned(responseCode)) {
           status = 'Returned';
         } else {
           status = 'Cancelled';
         }
-        await prisma.order.update({
+        const order = await prisma.order.update({
           where: { id: data.Ds_Order },
-          data: { status, redsysResponse: responseCode }
+          data: { status, redsysResponse: responseCode },
+          include: {
+            user: {
+              select: { name: true }
+            }
+          }
         });
+
+        if (
+          useEmailFeature &&
+          status === 'Paid' &&
+          order &&
+          order.email
+        ) {
+          const { sendEmail } = await import('@/lib/services/email');
+
+          await sendEmail(
+            translations[order.language].emailText as Record<Language, string>,
+            order.language as Language,
+            {
+              to: order.email,
+              name: order.user.name,
+              orderNumber: order.id.toString(),
+              description: order.description,
+              amount: order.amount.toString()
+            }
+          );
+        }
       } else {
         throw new Error('Unexpected redsys event');
       }
