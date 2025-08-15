@@ -41,6 +41,8 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
     amount
   } = data;
 
+  console.log({ data });
+
   try {
     const info = await transporter.sendMail({
       from,
