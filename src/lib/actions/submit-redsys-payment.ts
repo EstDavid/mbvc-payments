@@ -99,6 +99,7 @@ export async function submitRedsysPayment (formData: FormData) {
       description: data.productDescription,
       status: "Pending",
       language: data.language,
+      email: data.email,
       user: {
         connectOrCreate: {
           where: {
@@ -106,7 +107,6 @@ export async function submitRedsysPayment (formData: FormData) {
           },
           create: {
             phoneNumber: data.phoneNumber,
-            email: data.email,
             name: data.name,
             lastName: data.surname
           }

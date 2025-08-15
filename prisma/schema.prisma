@@ -30,7 +30,6 @@ enum Language {
 model User {
   id          Int      @id @default(autoincrement())
   phoneNumber String   @unique @map("phone_number")
-  email       String
   name        String
   lastName    String   @map("last_name")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -47,6 +46,7 @@ model Order {
   amount          Decimal     @db.Decimal(10, 2)
   status          OrderStatus @default(Created)
   language        Language    @default(en)
+  email           String?
   redsysResponse  String?     @map("redsys_response")
   description     String
 

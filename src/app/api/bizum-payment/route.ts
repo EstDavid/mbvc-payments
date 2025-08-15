@@ -1,16 +1,16 @@
+import z from 'zod';
 import { prisma } from '@/lib/db';
 import { redsysRestEventSchema } from '@/lib/schemas/redsys';
-import { sendEmail } from '@/lib/services/email';
 import translations from '@/lib/translations';
 import { getRedsysResponseData } from '@/lib/utils/crypto';
 import { requireEnv } from '@/lib/utils/server';
 import { Language } from '@/types/payment';
 import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import z from 'zod';
+// import { sendEmail } from '@/lib/services/email';
 
 const redsysMerchantCode = requireEnv("REDSYS_MERCHANT_CODE");
-const emailFeatureFlag = requireEnv("EMAIL_FEATURE_FLAG");
+const emailFeatureFlag = requireEnv("NEXT_PUBLIC_EMAIL_FEATURE_FLAG");
 
 const useEmailFeature = emailFeatureFlag === 'TRUE';
 
@@ -40,21 +40,23 @@ export async function POST (req: NextRequest) {
         let status: OrderStatus;
         if (isAuthorized(responseCode)) {
           if (useEmailFeature) {
+            const { sendEmail } = await import('@/lib/services/email');
+
             const order = await prisma.order.findUnique({
               where: { id: data.Ds_Order },
               include: {
                 user: {
-                  select: { name: true, email: true }
+                  select: { name: true }
                 }
               }
             });
 
-            if (order) {
+            if (order && order.email) {
               sendEmail(
                 translations[order.language].emailText,
                 order.language as Language,
                 {
-                  to: order.user.email,
+                  to: order.email,
                   name: order.user.name,
                   orderNumber: order.id.toString(),
                   description: order.description,

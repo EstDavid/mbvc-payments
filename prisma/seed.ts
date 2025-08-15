@@ -10,12 +10,12 @@ async function main () {
       amount: 36,
       description: 'Yearly subscription',
       status: 'Paid',
+      email: 'player@montgobvc.com',
       user: {
         connectOrCreate: {
           where: { phoneNumber },
           create: {
             phoneNumber,
-            email: 'player@montgobvc.com',
             name: 'Player',
             lastName: 'Montgo',
           }
