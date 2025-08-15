@@ -52,7 +52,6 @@ export async function POST (req: NextRequest) {
       if (data.Ds_MerchantCode === redsysMerchantCode) {
         let status: OrderStatus;
         if (isAuthorized(responseCode)) {
-          console.log({ useEmailFeature });
           if (useEmailFeature) {
             const { sendEmail } = await import('@/lib/services/email');
 
@@ -65,10 +64,7 @@ export async function POST (req: NextRequest) {
               }
             });
 
-            console.log({ order });
-
             if (order && order.email) {
-              console.log('Sending order');
               sendEmail(
                 translations[order.language].emailText as Record<Language, string>,
                 order.language as Language,
