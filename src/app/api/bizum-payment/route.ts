@@ -24,7 +24,9 @@ const isCancelledOrReturned = (code: string) => {
 export async function POST (req: NextRequest) {
   let body;
   try {
+    console.log({ req });
     body = await req.json();
+    console.log({ body });
     // Process the received data here
 
     const data = getRedsysResponseData<z.infer<typeof redsysRestEventSchema>>(
