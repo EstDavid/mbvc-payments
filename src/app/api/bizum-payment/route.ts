@@ -22,17 +22,29 @@ const isCancelledOrReturned = (code: string) => {
 };
 
 export async function POST (req: NextRequest) {
-  let body;
+  let body: Record<string, unknown> | undefined;
   try {
-    console.log({ req });
-    body = await req.json();
-    console.log({ body });
-    // Process the received data here
+    // Redsys posts application/x-www-form-urlencoded (Ds_MerchantParameters, Ds_Signature, ...)
+    const contentType = (req.headers.get('content-type') || '').toLowerCase();
 
-    const data = getRedsysResponseData<z.infer<typeof redsysRestEventSchema>>(
-      body,
-      redsysRestEventSchema
-    );
+    if (contentType.includes('application/x-www-form-urlencoded')) {
+      const text = await req.text();
+      body = Object.fromEntries(new URLSearchParams(text)) as Record<string, unknown>;
+    } else if (contentType.includes('application/json')) {
+      body = await req.json();
+    } else {
+      // Try json first, fallback to form parsing
+      try {
+        body = await req.json();
+      } catch {
+        const text = await req.text();
+        body = Object.fromEntries(new URLSearchParams(text)) as Record<string, unknown>;
+      }
+    }
+
+    if (!body) throw new Error('Empty request body');
+
+    const data = getRedsysResponseData<z.infer<typeof redsysRestEventSchema>>(body, redsysRestEventSchema);
 
     if ('Ds_Response' in data && typeof data.Ds_Response === 'string') {
       const responseCode = data.Ds_Response;
