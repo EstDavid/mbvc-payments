@@ -83,6 +83,7 @@ export async function submitRedsysPayment (formData: FormData) {
 
   const validatedFields = paymentSchema.safeParse(paymentData);
   if (!validatedFields.success) {
+    console.log(validatedFields);
     return {
       valid: false,
       errors: getZodIssues(validatedFields.error),
@@ -153,7 +154,7 @@ export async function submitRedsysPayment (formData: FormData) {
         errorType: ErrorTypes.NoBizumError
       };
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Log error for debugging
     console.error('submitRedsysPayment error:', error);
 
@@ -164,15 +165,6 @@ export async function submitRedsysPayment (formData: FormData) {
         errors: getZodIssues(error),
         message: 'Validation error',
         errorType: ErrorTypes.FormValidationError
-      };
-    }
-
-    // Network or API error
-    if (error?.name === 'FetchError' || error?.code === 'ECONNREFUSED' || error?.message?.includes('network')) {
-      return {
-        valid: false,
-        message: 'Network or API error. Please try again later.',
-        errorType: ErrorTypes.NetworkError
       };
     }
 
@@ -195,18 +187,23 @@ export async function submitRedsysPayment (formData: FormData) {
       };
     }
 
-    if (error?.name === 'FetchError' || error?.code === 'ECONNREFUSED' || error?.message?.includes('network')) {
-      return {
-        valid: false,
-        message: 'Network or API error. Please try again later.',
-        errorType: ErrorTypes.NetworkError
-      };
+    if (typeof error === "object" && error) {    // Network or API error
+      if (
+        'name' in error && error?.name === 'FetchError' ||
+        'code' in error && error?.code === 'ECONNREFUSED' ||
+        'message' in error && typeof error?.message === 'string' && error?.message?.includes('network')) {
+        return {
+          valid: false,
+          message: 'Network or API error. Please try again later.',
+          errorType: ErrorTypes.NetworkError
+        };
+      }
     }
 
     // Unexpected error
     return {
       valid: false,
-      message: error?.message || 'An unexpected error occurred',
+      message: error && typeof error === 'object' && 'message' in error && error?.message || 'An unexpected error occurred',
       errorType: ErrorTypes.UnknownError
     };
   }

@@ -1,7 +1,7 @@
 // src/lib/translations.ts
 import type { Language } from "@/types/payment";
 
-const translations: Record<Language, any> = {
+const translations: Record<Language, Record<string, string | Record<string, string>>> = {
   es: {
     title: "Montgó Beach Volley Club",
     description: "Pagos Bizum",

@@ -48,7 +48,7 @@ export function decodeMerchantParameters (encodedData: string) {
 }
 
 export function getRedsysResponseData<T> (
-  redsysResponse: Record<string, any>,
+  redsysResponse: Record<string, unknown>,
   schema: z.ZodObject
 ): T {
   const validatedRedsysResponse = redsysEncodedResponseSchema.safeParse(redsysResponse);

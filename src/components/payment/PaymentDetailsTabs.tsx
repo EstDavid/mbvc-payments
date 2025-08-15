@@ -22,7 +22,7 @@ interface PaymentDetailsTabsProps {
   setCustomAmount: (amount: string) => void;
   setCustomDescription: (desc: string) => void;
   setIsCustomAmount: (isCustom: boolean) => void;
-  t: Record<string, any>;
+  t: Record<string, string | Record<string, string>>;
 }
 
 export default function PaymentDetailsTabs ({
@@ -41,6 +41,8 @@ export default function PaymentDetailsTabs ({
   setIsCustomAmount,
   t,
 }: PaymentDetailsTabsProps) {
+  const flatT = t as Record<string, string>;
+  const tServices = t.services as Record<string, string>;
   return (
     <div className="w-full space-y-4">
       {/* Custom Amount Toggle */}
@@ -58,7 +60,7 @@ export default function PaymentDetailsTabs ({
           }}
         />
         <Label htmlFor="custom-amount-toggle" className="text-sm font-medium">
-          {t.customAmount}
+          {flatT.customAmount}
         </Label>
       </div>
 
@@ -66,7 +68,7 @@ export default function PaymentDetailsTabs ({
         /* Custom Amount Form */
         <div className="space-y-4 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="custom-amount">{t.amount} (€) *</Label>
+            <Label htmlFor="custom-amount">{flatT.amount} (€) *</Label>
             <Input
               id="custom-amount"
               type="number"
@@ -74,19 +76,19 @@ export default function PaymentDetailsTabs ({
               min="1"
               value={customAmount}
               onChange={e => setCustomAmount(e.target.value)}
-              placeholder={t.enterAmount}
+              placeholder={flatT.enterAmount}
               className={fieldErrors.amount ? "border-red-500" : ""}
               required
             />
             {fieldErrors.amount && <p className="text-xs text-red-500">{fieldErrors.amount}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="custom-description">{t.description} *</Label>
+            <Label htmlFor="custom-description">{flatT.description} *</Label>
             <Textarea
               id="custom-description"
               value={customDescription}
               onChange={e => setCustomDescription(e.target.value)}
-              placeholder={t.enterDescription}
+              placeholder={flatT.enterDescription}
               className={fieldErrors.productDescription ? "border-red-500" : ""}
               required
             />
@@ -105,19 +107,19 @@ export default function PaymentDetailsTabs ({
               value="drop-in-class"
               className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {t.dropInClasses}
+              {flatT.dropInClasses}
             </TabsTrigger>
             <TabsTrigger
               value="monthly-plans"
               className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {t.monthlyPlans}
+              {flatT.monthlyPlans}
             </TabsTrigger>
             <TabsTrigger
               value="membership"
               className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {t.membership}
+              {flatT.membership}
             </TabsTrigger>
           </TabsList>
 
@@ -127,23 +129,23 @@ export default function PaymentDetailsTabs ({
             <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
               <Switch id="member-toggle" checked={isMember} onCheckedChange={handleMemberToggle} />
               <Label htmlFor="member-toggle" className="text-sm font-medium">
-                {t.memberPrices}
+                {flatT.memberPrices}
               </Label>
             </div>
             <div className="p-4 bg-[#e6f0f5] rounded-lg border border-[#b3d1e0]">
               <h4 className="font-semibold text-[#156082] mb-2 text-center text-2xl">
-                {t.services.dropIn}
+                {tServices.dropIn}
               </h4>
 
               <div className="text-2xl font-bold text-[#156082] text-center">{servicesPrices.dropIn[isMember ? "member" : "nonMember"]}€</div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="custom-description">{t.description}</Label>
+              <Label htmlFor="custom-description">{flatT.description}</Label>
               <Textarea
                 id="custom-description"
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
-                placeholder={t.enterDescription}
+                placeholder={flatT.enterDescription}
                 className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
               {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
@@ -156,21 +158,21 @@ export default function PaymentDetailsTabs ({
             <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
               <Switch id="member-toggle" checked={isMember} onCheckedChange={handleMemberToggle} />
               <Label htmlFor="member-toggle" className="text-sm font-medium">
-                {t.memberPrices}
+                {flatT.memberPrices}
               </Label>
             </div>
 
             {/* Monthly Plans Selection */}
             <div className="space-y-4">
-              <Label>{t.selectService} *</Label>
+              <Label>{flatT.selectService} *</Label>
               <Select value={selectedService} onValueChange={setSelectedService} required>
                 <SelectTrigger>
-                  <SelectValue placeholder={t.selectService} />
+                  <SelectValue placeholder={flatT.selectService} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="monthly1" className="max-w-full">
                     <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
-                      <span className="text-sm font-medium">{t.services.monthly1}</span>
+                      <span className="text-sm font-medium">{tServices.monthly1}</span>
                       <span className="text-sm font-bold text-[#156082]">
                         {servicesPrices.monthly1[isMember ? "member" : "nonMember"]}€
                       </span>
@@ -178,7 +180,7 @@ export default function PaymentDetailsTabs ({
                   </SelectItem>
                   <SelectItem value="monthly2" className="max-w-full">
                     <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
-                      <span className="text-sm font-medium">{t.services.monthly2}</span>
+                      <span className="text-sm font-medium">{tServices.monthly2}</span>
                       <span className="text-sm font-bold text-[#156082]">
                         {servicesPrices.monthly2[isMember ? "member" : "nonMember"]}€
                       </span>
@@ -186,7 +188,7 @@ export default function PaymentDetailsTabs ({
                   </SelectItem>
                   <SelectItem value="monthly3" className="max-w-full">
                     <div className="flex flex-col sm:flex-row sm:gap-2 sm:justify-between w-full">
-                      <span className="text-sm font-medium">{t.services.monthly3}</span>
+                      <span className="text-sm font-medium">{tServices.monthly3}</span>
                       <span className="text-sm font-bold text-[#156082]">
                         {servicesPrices.monthly3[isMember ? "member" : "nonMember"]}€
                       </span>
@@ -194,12 +196,12 @@ export default function PaymentDetailsTabs ({
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <Label htmlFor="custom-description">{t.description}</Label>
+              <Label htmlFor="custom-description">{flatT.description}</Label>
               <Textarea
                 id="custom-description"
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
-                placeholder={t.enterDescription}
+                placeholder={flatT.enterDescription}
                 className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
               {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
@@ -210,20 +212,20 @@ export default function PaymentDetailsTabs ({
           <TabsContent value="membership" className="space-y-4 mt-6">
             <div className="p-4 bg-[#e6f0f5] rounded-lg border border-[#b3d1e0]">
               <h4 className="font-semibold text-[#156082] mb-2 text-center text-2xl">
-                {t.membership}
+                {flatT.membership}
               </h4>
               <p className="text-sm text-[#156082] mb-3 text-center">
-                {t.membershipDescription}
+                {flatT.membershipDescription}
               </p>
               <div className="text-2xl font-bold text-[#156082] text-center">{membershipPrice}€</div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="custom-description">{t.description}</Label>
+              <Label htmlFor="custom-description">{flatT.description}</Label>
               <Textarea
                 id="custom-description"
                 value={customDescription}
                 onChange={e => setCustomDescription(e.target.value)}
-                placeholder={t.enterDescription}
+                placeholder={flatT.enterDescription}
                 className={fieldErrors.productDescription ? "border-red-500" : ""}
               />
               {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}

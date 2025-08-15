@@ -1,5 +1,7 @@
 import { Language } from '@/types/payment';
 import nodemailer from 'nodemailer';
+import fs from 'fs';
+import path from 'path';
 import { requireEnv } from '@/lib/utils/server';
 
 const rejectUnauthorized = requireEnv('EMAIL_REJECT_UNAUTHORIZED');
@@ -49,12 +51,12 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
       attachments: [
         {
           filename: "logo_small.png",
-          path: "./public/logo.png",
+          content: fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png')),
           cid: "logo@nodemailer"
         },
         {
           filename: "bizum-logo.png",
-          path: "./public/bizum-logo.png",
+          content: fs.readFileSync(path.join(process.cwd(), 'public', 'bizum-logo.png')),
           cid: "bizumlogo@nodemailer"
         }
       ],
@@ -178,5 +180,4 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
   } catch (error) {
     console.error(error);
   }
-
 }

@@ -7,7 +7,6 @@ import { requireEnv } from '@/lib/utils/server';
 import { Language } from '@/types/payment';
 import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-// import { sendEmail } from '@/lib/services/email';
 
 const redsysMerchantCode = requireEnv("REDSYS_MERCHANT_CODE");
 const emailFeatureFlag = requireEnv("NEXT_PUBLIC_EMAIL_FEATURE_FLAG");
@@ -23,15 +22,29 @@ const isCancelledOrReturned = (code: string) => {
 };
 
 export async function POST (req: NextRequest) {
-  let body;
+  let body: Record<string, unknown> | undefined;
   try {
-    body = await req.json();
-    // Process the received data here
+    // Redsys posts application/x-www-form-urlencoded (Ds_MerchantParameters, Ds_Signature, ...)
+    const contentType = (req.headers.get('content-type') || '').toLowerCase();
 
-    const data = getRedsysResponseData<z.infer<typeof redsysRestEventSchema>>(
-      body,
-      redsysRestEventSchema
-    );
+    if (contentType.includes('application/x-www-form-urlencoded')) {
+      const text = await req.text();
+      body = Object.fromEntries(new URLSearchParams(text)) as Record<string, unknown>;
+    } else if (contentType.includes('application/json')) {
+      body = await req.json();
+    } else {
+      // Try json first, fallback to form parsing
+      try {
+        body = await req.json();
+      } catch {
+        const text = await req.text();
+        body = Object.fromEntries(new URLSearchParams(text)) as Record<string, unknown>;
+      }
+    }
+
+    if (!body) throw new Error('Empty request body');
+
+    const data = getRedsysResponseData<z.infer<typeof redsysRestEventSchema>>(body, redsysRestEventSchema);
 
     if ('Ds_Response' in data && typeof data.Ds_Response === 'string') {
       const responseCode = data.Ds_Response;
@@ -39,42 +52,42 @@ export async function POST (req: NextRequest) {
       if (data.Ds_MerchantCode === redsysMerchantCode) {
         let status: OrderStatus;
         if (isAuthorized(responseCode)) {
-          if (useEmailFeature) {
-            const { sendEmail } = await import('@/lib/services/email');
-
-            const order = await prisma.order.findUnique({
-              where: { id: data.Ds_Order },
-              include: {
-                user: {
-                  select: { name: true }
-                }
-              }
-            });
-
-            if (order && order.email) {
-              sendEmail(
-                translations[order.language].emailText,
-                order.language as Language,
-                {
-                  to: order.email,
-                  name: order.user.name,
-                  orderNumber: order.id.toString(),
-                  description: order.description,
-                  amount: order.amount.toString()
-                }
-              );
-            }
-          }
           status = 'Paid';
         } else if (isCancelledOrReturned(responseCode)) {
           status = 'Returned';
         } else {
           status = 'Cancelled';
         }
-        await prisma.order.update({
+        const order = await prisma.order.update({
           where: { id: data.Ds_Order },
-          data: { status, redsysResponse: responseCode }
+          data: { status, redsysResponse: responseCode },
+          include: {
+            user: {
+              select: { name: true }
+            }
+          }
         });
+
+        if (
+          useEmailFeature &&
+          status === 'Paid' &&
+          order &&
+          order.email
+        ) {
+          const { sendEmail } = await import('@/lib/services/email');
+
+          await sendEmail(
+            translations[order.language].emailText as Record<Language, string>,
+            order.language as Language,
+            {
+              to: order.email,
+              name: order.user.name,
+              orderNumber: order.id.toString(),
+              description: order.description,
+              amount: order.amount.toString()
+            }
+          );
+        }
       } else {
         throw new Error('Unexpected redsys event');
       }

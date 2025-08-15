@@ -7,7 +7,7 @@ interface ErrorModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  t: Record<string, any>;
+  t: Record<string, string>;
   message: string | undefined;
 }
 
