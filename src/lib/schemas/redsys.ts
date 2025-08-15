@@ -25,7 +25,7 @@ export const paymentSchema = z.object({
   productDescription: z.preprocess(trimDescriptionString, z.string('Invalid product description').min(1)),
   name: z.preprocess(trimDescriptionString, z.string('Invalid member name').min(4)),
   surname: z.preprocess(trimDescriptionString, z.string('Invalid member surname').min(4)),
-  email: z.email("Invalid email address"),
+  email: z.email("Invalid email address").optional(),
   language: z.enum(['es', 'en'])
 }).transform((payment) => {
   return {
@@ -51,9 +51,9 @@ export const redsysRestResponseSchema = z.object({
   Ds_TransactionType: z.string(),
   Ds_SecurePayment: z.string().nullish(),
   Ds_Language: z.string(),
-  Ds_MerchantData: z.string(),
-  Ds_Bizum_IdOper: z.string(),
-  Ds_ProcessedPayMethod: z.string(),
+  Ds_MerchantData: z.string().nullish(),
+  Ds_Bizum_IdOper: z.string().nullish(),
+  Ds_ProcessedPayMethod: z.string().nullish(),
   Ds_RtpResponse: z.string().nullish(),
   Ds_RtpDescription: z.string().nullish()
 });

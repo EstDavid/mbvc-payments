@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useTransition } from "react";
+import React, { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { submitRedsysPayment } from "@/lib/actions/submit-redsys-payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,13 +23,20 @@ import ProcessingModal from "../payment/ProcessingModal";
 import ResultModal from "../payment/ResultModal";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ErrorTypes } from "@/types/error-handling";
+import Link from "next/link";
+
+const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
+
+const emailFeatureFlag = process.env.NEXT_PUBLIC_EMAIL_FEATURE_FLAG;
+
+const useEmailFeature = emailFeatureFlag === 'TRUE';
 
 export default function PaymentForm () {
   const router = useRouter();
   const params = useSearchParams();
   const pathname = usePathname();
   const [language, setLanguage] = useState<Language>(Language.es);
-  const [paymentType, setPaymentType] = useState<PaymentType>("drop-in-class");
+  const [paymentType, setPaymentType] = useState<PaymentType>("monthly-plans");
   const [isMember, setIsMember] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [customAmount, setCustomAmount] = useState("");
@@ -282,7 +289,7 @@ export default function PaymentForm () {
     paymentData.append("name", formData.name);
     paymentData.append("surname", formData.surname);
     paymentData.append("phoneNumber", `${formData.phone}`);
-    paymentData.append("email", formData.email);
+    useEmailFeature && paymentData.append("email", formData.email);
     paymentData.append("paymentType", paymentType);
     paymentData.append("amount", String(getAmount(paymentType, customAmount, selectedService, isMember)));
     paymentData.append("productDescription", getDescription(paymentType, customDescription, selectedService, language));
@@ -361,9 +368,42 @@ export default function PaymentForm () {
         <Card className="shadow-none sm:shadow-2xl border-0">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <Image src="/logo.png" alt="Montgó Beach Volley Club Logo" width={200} height={100} className="h-16 w-auto" />
+              {clubUrl ?
+                <Link
+                  href={clubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    src="/logo.png"
+                    alt="Montgó Beach Volley Club Logo"
+                    width={200}
+                    height={100}
+                    className="h-16 w-auto"
+                  />
+                </Link>
+                :
+                <Image
+                  src="/logo.png"
+                  alt="Montgó Beach Volley Club Logo"
+                  width={200}
+                  height={100}
+                  className="h-16 w-auto"
+                />
+              }
+
             </div>
-            <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
+            {clubUrl ?
+              <Link
+                href={clubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
+              </Link>
+              :
+              <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
+            }
             <CardDescription>{t.description}</CardDescription>
           </CardHeader>
           <CardContent className="px-4">
@@ -392,7 +432,14 @@ export default function PaymentForm () {
                   email: t.email,
                   phoneFormat: t.phoneFormat,
                 }}
+                includeEmail={useEmailFeature}
               />
+              <div className="flex items-center space-x-2">
+                <Checkbox id="save-data" checked={saveData} onCheckedChange={checked => setSaveData(checked === true)} />
+                <Label htmlFor="save-data" className="text-sm">
+                  {t.saveData}
+                </Label>
+              </div>
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">{t.paymentDetails}</h3>
                 <PaymentDetailsTabs
@@ -436,12 +483,6 @@ export default function PaymentForm () {
                   description={getDescription(paymentType, customDescription, selectedService, language)}
                   t={t}
                 />
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="save-data" checked={saveData} onCheckedChange={checked => setSaveData(checked === true)} />
-                  <Label htmlFor="save-data" className="text-sm">
-                    {t.saveData}
-                  </Label>
-                </div>
               </div>
               <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a] h-auto py-3" disabled={isPending}>
                 <Image src="/bizum-logo.svg" alt="Bizum Logo" width={200} height={60} className="h-8 w-auto mr-4" />

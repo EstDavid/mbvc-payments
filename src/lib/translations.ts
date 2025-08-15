@@ -3,13 +3,13 @@ import type { Language } from "@/types/payment";
 
 const translations: Record<Language, any> = {
   es: {
-    title: "Montgó Beach Volley Club - Pagos Bizum",
-    description: "Añade una descripción",
+    title: "Montgó Beach Volley Club",
+    description: "Pagos Bizum",
     personalInfo: "Información Personal",
     name: "Nombre",
     surname: "Apellidos",
     phone: "Teléfono",
-    email: "Correo Electrónico",
+    email: "Correo electrónico (opcional)",
     paymentDetails: "Detalles del Pago",
     paymentType: "Tipo de Pago",
     dropInClasses: "Clase suelta",
@@ -65,13 +65,13 @@ const translations: Record<Language, any> = {
     }
   },
   en: {
-    title: "Montgó Beach Volley Club - Bizum payments",
-    description: "Add a description",
+    title: "Montgó Beach Volley Club",
+    description: "Bizum payments",
     personalInfo: "Personal Information",
     name: "Name",
     surname: "Surname",
     phone: "Phone Number",
-    email: "Email Address",
+    email: "Email Address (optional)",
     paymentDetails: "Payment Details",
     paymentType: "Payment Type",
     dropInClasses: "Drop-in class",

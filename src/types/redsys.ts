@@ -9,6 +9,7 @@ export type RedsysTransactionParameters = {
   DS_MERCHANT_CURRENCY: string;
   DS_MERCHANT_ORDER: string;
   DS_MERCHANT_MERCHANTCODE: string;
+  DS_MERCHANT_CONSUMERLANGUAGE: '001' | '002';
   DS_MERCHANT_SIGNATURE: string;
   DS_MERCHANT_TERMINAL: string;
   DS_MERCHANT_PRODUCTDESCRIPTION: string;
