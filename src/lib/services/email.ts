@@ -177,10 +177,7 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
           </html>
         `
     });
-    console.log({ info });
   } catch (error) {
-    console.log('There was an error sending the email');
-    console.log({ error });
     console.error(error);
   }
 }
