@@ -524,8 +524,16 @@ export default function PaymentForm () {
         <ResultModal
           open={showResultModal}
           success={bizumResult?.success}
-          onOpenChange={setShowResultModal}
-          onConfirm={() => setShowResultModal(false)}
+          onOpenChange={(open) => {
+            setShowResultModal(open);
+            if (!open) {
+              setBizumResult(null);
+            }
+          }}
+          onConfirm={() => {
+            setShowResultModal(false);
+            setBizumResult(null);
+          }}
           t={flatT}
         />
       </div>
