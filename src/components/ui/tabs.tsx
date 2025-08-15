@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
+import * as React from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/shadcn";
 
-function Tabs({
+function Tabs ({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
@@ -15,10 +15,10 @@ function Tabs({
       className={cn("flex flex-col gap-2", className)}
       {...props}
     />
-  )
+  );
 }
 
-function TabsList({
+function TabsList ({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
@@ -31,10 +31,10 @@ function TabsList({
       )}
       {...props}
     />
-  )
+  );
 }
 
-function TabsTrigger({
+function TabsTrigger ({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
@@ -47,10 +47,10 @@ function TabsTrigger({
       )}
       {...props}
     />
-  )
+  );
 }
 
-function TabsContent({
+function TabsContent ({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
@@ -60,7 +60,7 @@ function TabsContent({
       className={cn("flex-1 outline-none", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };
