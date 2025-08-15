@@ -7,7 +7,6 @@ import { requireEnv } from '@/lib/utils/server';
 import { Language } from '@/types/payment';
 import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-// import { sendEmail } from '@/lib/services/email';
 
 const redsysMerchantCode = requireEnv("REDSYS_MERCHANT_CODE");
 const emailFeatureFlag = requireEnv("NEXT_PUBLIC_EMAIL_FEATURE_FLAG");
@@ -53,7 +52,7 @@ export async function POST (req: NextRequest) {
 
             if (order && order.email) {
               sendEmail(
-                translations[order.language].emailText,
+                translations[order.language].emailText as Record<Language, string>,
                 order.language as Language,
                 {
                   to: order.email,

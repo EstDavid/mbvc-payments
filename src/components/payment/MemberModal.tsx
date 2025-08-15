@@ -8,7 +8,7 @@ interface MemberModalProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   onCancel: () => void;
-  t: Record<string, any>;
+  t: Record<string, string>;
 }
 
 export default function MemberModal ({ open, onOpenChange, onConfirm, onCancel, t }: MemberModalProps) {

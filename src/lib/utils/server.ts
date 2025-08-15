@@ -19,7 +19,7 @@ export function addQueryParameterToAbsoluteUrl (url: string, paramName: string, 
     const urlObj = new URL(url);
     urlObj.searchParams.set(paramName, paramValue);
     return urlObj.toString();
-  } catch (error) {
+  } catch {
     // If URL is invalid, return the original URL
     console.error('Invalid URL provided:', url);
     return url;

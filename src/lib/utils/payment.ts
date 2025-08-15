@@ -20,9 +20,15 @@ export function getAmount (paymentType: PaymentType, customAmount: string, selec
 }
 
 export function getDescription (paymentType: PaymentType, customDescription: string, selectedService: string, language: Language): string {
-  if (paymentType === "membership") return `${translations[language].membership}. ${customDescription}`;
-  if (paymentType === "custom") return customDescription;
-  if (paymentType === "drop-in-class") return `${translations[language].services.dropIn}. ${customDescription}`;
+  if (paymentType === "membership") {
+    return `${translations[language].membership}. ${customDescription}`;
+  }
+  if (paymentType === "custom") {
+    return customDescription;
+  }
+  if (paymentType === "drop-in-class") {
+    return `${translations[language].services['dropIn' as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
+  }
   if (selectedService) {
     return `${translations[language].services[selectedService as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
   }

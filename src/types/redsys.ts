@@ -1,5 +1,3 @@
-import { Language } from "./payment";
-
 export type RedsysTransactionParameters = {
   DS_MERCHANT_PAYMETHODS: string;
   DS_MERCHANT_TRANSACTIONTYPE: string;

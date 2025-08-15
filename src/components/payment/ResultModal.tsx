@@ -8,7 +8,7 @@ interface ResultModalProps {
   success: boolean | undefined;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  t: Record<string, any>;
+  t: Record<string, string>;
 }
 
 export default function ResultModal ({

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useEffect, useRef, useState, useTransition } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import { submitRedsysPayment } from "@/lib/actions/submit-redsys-payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +48,6 @@ export default function PaymentForm () {
   const [followInstructions, setFollowInstructions] = useState(false);
   const [pollTransaction, setPollTransaction] = useState<null | number>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [showResultModal, setShowResultModal] = useState(false);
   const [bizumRequest, setBizumRequest] = useState<null | RedsysRequestParameters>(null);
   const [formData, setFormData] = useState({
@@ -64,6 +63,8 @@ export default function PaymentForm () {
   const [isPending, startTransition] = useTransition();
   const [bizumResult, setBizumResult] = useState<null | { success: boolean; message: string; }>(null);
 
+  const t = translations[language];
+  const flatT = t as Record<string, string>;
 
   // Extract 'status' query parameter from URL (if present)
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function PaymentForm () {
       if (status) {
         setBizumResult({
           success: status === "success",
-          message: status === "success" ? t.paymentSuccess : t.paymentRejectedByUser,
+          message: status === "success" ? flatT.paymentSuccess : flatT.paymentRejectedByUser,
         });
 
         // Remove 'status' from the URL without reloading the page
@@ -91,7 +92,7 @@ export default function PaymentForm () {
         router.replace(newUrl);
       }
     }
-  }, []);
+  }, [language, params, pathname, router, flatT]);
 
   // Populate formData from localStorage on first render
   useEffect(() => {
@@ -132,7 +133,6 @@ export default function PaymentForm () {
           clearInterval(interval);
           // Optionally notify user about timeout
           setShowErrorModal(true);
-          setErrorMessage("Payment status check timed out. Please try again.");
           return;
         }
 
@@ -143,12 +143,12 @@ export default function PaymentForm () {
             if (data.status === 'Paid') {
               // Notify user
               setIsProcessing(false);
-              setBizumResult({ success: true, message: t.paymentSuccess });
+              setBizumResult({ success: true, message: flatT.paymentSuccess });
               clearInterval(interval);
             } else if (data.status === 'Cancelled') {
               // Notify user
               setIsProcessing(false);
-              setBizumResult({ success: false, message: t.paymentRejectedByUser });
+              setBizumResult({ success: false, message: flatT.paymentRejectedByUser });
               clearInterval(interval);
             }
           }
@@ -157,7 +157,7 @@ export default function PaymentForm () {
 
       return () => clearInterval(interval);
     }
-  }, [pollTransaction]);
+  }, [pollTransaction, flatT]);
 
   useEffect(() => {
     if (bizumResult) {
@@ -182,7 +182,7 @@ export default function PaymentForm () {
         setShowResultModal(false);
       }
     }
-  }, [bizumResult]);
+  }, [bizumResult, showErrorModal, showResultModal]);
 
 
   // Reset the followInstructions boolean when isProcessing becomes false
@@ -190,8 +190,7 @@ export default function PaymentForm () {
     if (!isProcessing && followInstructions) {
       setFollowInstructions(false);
     }
-  }, [isProcessing]);
-  const t = translations[language];
+  }, [isProcessing, followInstructions, setFollowInstructions]);
 
   const handleMemberToggle = (checked: boolean) => {
     if (checked) {
@@ -228,7 +227,7 @@ export default function PaymentForm () {
         if (validateSpanishPhone(cleanPhone)) {
           setPhoneError("");
         } else {
-          setPhoneError(t.phoneValidation);
+          setPhoneError(flatT.phoneValidation);
         }
       } else {
         setPhoneError("");
@@ -248,8 +247,8 @@ export default function PaymentForm () {
     if (!validateSpanishPhone(formData.phone)) {
       setPhoneError(
         formData.phone.trim() === ""
-          ? t.phoneRequired
-          : t.phoneValidation
+          ? flatT.phoneRequired
+          : flatT.phoneValidation
       );
       setIsProcessing(false);
       return;
@@ -289,7 +288,9 @@ export default function PaymentForm () {
     paymentData.append("name", formData.name);
     paymentData.append("surname", formData.surname);
     paymentData.append("phoneNumber", `${formData.phone}`);
-    useEmailFeature && paymentData.append("email", formData.email);
+    if (useEmailFeature) {
+      paymentData.append("email", formData.email);
+    }
     paymentData.append("paymentType", paymentType);
     paymentData.append("amount", String(getAmount(paymentType, customAmount, selectedService, isMember)));
     paymentData.append("productDescription", getDescription(paymentType, customDescription, selectedService, language));
@@ -319,7 +320,7 @@ export default function PaymentForm () {
               // Handle field-specific validation errors
               setBizumResult({
                 success: false,
-                message: t.validationError
+                message: flatT.validationError
               });
               if (result.errors) {
                 setFieldErrors(result.errors);
@@ -327,23 +328,23 @@ export default function PaymentForm () {
             } else if (errorType === ErrorTypes.NoBizumError) {
               setBizumResult({
                 success: false,
-                message: t.userHasNoBizum
+                message: flatT.userHasNoBizum
               });
             } else if (errorType === ErrorTypes.PaymentGatewayError) {
               setBizumResult({
                 success: false,
-                message: `${t.errorGateway}\n${result.message}`
+                message: `${flatT.errorGateway}\n${result.message}`
               });
             } else {
               // Handle any other validation errors
               setBizumResult({
                 success: false,
-                message: result.message || t.errorGateway
+                message: result.message?.toString() || flatT.errorGateway
               });
             }
           } else {
             // Handle any other errors with the catch
-            throw new Error(result.message);
+            throw new Error(result.message?.toString());
           }
         }
       } catch (err) {
@@ -399,12 +400,12 @@ export default function PaymentForm () {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
+                <CardTitle className="text-2xl font-bold text-[#156082]">{flatT.title}</CardTitle>
               </Link>
               :
-              <CardTitle className="text-2xl font-bold text-[#156082]">{t.title}</CardTitle>
+              <CardTitle className="text-2xl font-bold text-[#156082]">{flatT.title}</CardTitle>
             }
-            <CardDescription>{t.description}</CardDescription>
+            <CardDescription>{flatT.description}</CardDescription>
           </CardHeader>
           <CardContent className="px-4">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -425,23 +426,23 @@ export default function PaymentForm () {
                 }}
                 onPhoneChange={handlePhoneChange}
                 translations={{
-                  personalInfo: t.personalInfo,
-                  name: t.name,
-                  surname: t.surname,
-                  phone: t.phone,
-                  email: t.email,
-                  phoneFormat: t.phoneFormat,
+                  personalInfo: flatT.personalInfo,
+                  name: flatT.name,
+                  surname: flatT.surname,
+                  phone: flatT.phone,
+                  email: flatT.email,
+                  phoneFormat: flatT.phoneFormat,
                 }}
                 includeEmail={useEmailFeature}
               />
               <div className="flex items-center space-x-2">
                 <Checkbox id="save-data" checked={saveData} onCheckedChange={checked => setSaveData(checked === true)} />
                 <Label htmlFor="save-data" className="text-sm">
-                  {t.saveData}
+                  {flatT.saveData}
                 </Label>
               </div>
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">{t.paymentDetails}</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{flatT.paymentDetails}</h3>
                 <PaymentDetailsTabs
                   paymentType={paymentType}
                   isMember={isMember}
@@ -481,12 +482,12 @@ export default function PaymentForm () {
                 <AmountSummary
                   amount={getAmount(paymentType, customAmount, selectedService, isMember)}
                   description={getDescription(paymentType, customDescription, selectedService, language)}
-                  t={t}
+                  t={flatT}
                 />
               </div>
               <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a] h-auto py-3" disabled={isPending}>
                 <Image src="/bizum-logo.svg" alt="Bizum Logo" width={200} height={60} className="h-8 w-auto mr-4" />
-                {isPending ? t.processingPayment || "Processing..." : `${t.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
+                {isPending ? flatT.processingPayment || "Processing..." : `${flatT.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
               </Button>
               {bizumResult && (
                 <div className={`mt-2 text-center ${bizumResult.success ? "text-green-600" : "text-red-600"}`}>
@@ -502,30 +503,26 @@ export default function PaymentForm () {
           onOpenChange={setShowMemberModal}
           onConfirm={confirmMemberPrices}
           onCancel={() => setShowMemberModal(false)}
-          t={t}
+          t={flatT}
         />
         <ErrorModal
           open={showErrorModal}
           onOpenChange={(open) => {
             setShowErrorModal(open);
-            if (!open) {
-              setErrorMessage("");
-            }
           }}
           onConfirm={() => {
             setShowErrorModal(false);
-            setErrorMessage("");
           }}
-          t={t}
+          t={flatT}
           message={bizumResult?.message}
         />
-        <ProcessingModal isProcessing={isProcessing} followInstructions={followInstructions} t={t} />
+        <ProcessingModal isProcessing={isProcessing} followInstructions={followInstructions} t={flatT} />
         <ResultModal
           open={showResultModal}
           success={bizumResult?.success}
           onOpenChange={setShowResultModal}
           onConfirm={() => setShowResultModal(false)}
-          t={t}
+          t={flatT}
         />
       </div>
     </div>

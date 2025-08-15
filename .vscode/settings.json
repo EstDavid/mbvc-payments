@@ -32,7 +32,7 @@
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "editor.formatOnSave": true,
-  "eslint.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "javascript.format.indentSwitchCase": false,
   "typescript.format.indentSwitchCase": false,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
