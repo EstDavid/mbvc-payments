@@ -44,6 +44,11 @@ function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, or
     language
   );
 
+  const consumerLanguages: Record<string, RedsysTransactionParameters["DS_MERCHANT_CONSUMERLANGUAGE"]> = {
+    es: '001',
+    en: '002'
+  };
+
   const transactionParameters: RedsysTransactionParameters = {
     DS_MERCHANT_PAYMETHODS: "z",
     DS_MERCHANT_TRANSACTIONTYPE: "0",
@@ -53,6 +58,7 @@ function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, or
     DS_MERCHANT_CURRENCY: "978",
     DS_MERCHANT_ORDER: orderNumber,
     DS_MERCHANT_MERCHANTCODE,
+    DS_MERCHANT_CONSUMERLANGUAGE: consumerLanguages[language],
     DS_MERCHANT_SIGNATURE,
     DS_MERCHANT_TERMINAL,
     DS_MERCHANT_PRODUCTDESCRIPTION: productDescription,
