@@ -24,6 +24,10 @@ import ResultModal from "../payment/ResultModal";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ErrorTypes } from "@/types/error-handling";
 import Link from "next/link";
+import LegalCheckboxArea from "../payment/legal-checkbox-area";
+import TermsModal from "../payment/TermsModal";
+import { termsConditionsData } from "@/lib/copy/terms-conditions";
+import { privacyPolicyData } from "@/lib/copy/privacy-policy";
 
 const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
 
@@ -62,6 +66,12 @@ export default function PaymentForm () {
 
   const [isPending, startTransition] = useTransition();
   const [bizumResult, setBizumResult] = useState<null | { success: boolean; message: string; }>(null);
+
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
 
   const t = translations[language];
   const flatT = t as Record<string, string>;
@@ -241,6 +251,18 @@ export default function PaymentForm () {
     }
   };
 
+  const canProcessPayment = () => {
+    return (
+      acceptedTerms &&
+      acceptedPrivacy &&
+      !phoneError &&
+      formData.name &&
+      formData.surname &&
+      formData.phone &&
+      formData.email
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -257,6 +279,12 @@ export default function PaymentForm () {
           : flatT.phoneValidation
       );
       setIsProcessing(false);
+      return;
+    }
+
+    // Check legal acceptance
+    if (!acceptedTerms || !acceptedPrivacy) {
+      alert(t.legalAcceptanceRequired);
       return;
     }
 
@@ -489,7 +517,19 @@ export default function PaymentForm () {
                   t={flatT}
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#156082] hover:bg-[#10496a] h-auto py-3" disabled={isPending}>
+              <LegalCheckboxArea
+                acceptedTerms={acceptedTerms}
+                acceptedPrivacy={acceptedPrivacy}
+                t={flatT}
+                setAcceptedTerms={setAcceptedTerms}
+                setAcceptedPrivacy={setAcceptedPrivacy}
+                setShowTermsModal={setShowTermsModal}
+                setShowPrivacyModal={setShowPrivacyModal}
+              />
+              <Button
+                type="submit"
+                className="w-full bg-[#156082] hover:bg-[#10496a] h-auto py-3"
+                disabled={isPending || isProcessing || !canProcessPayment()}>
                 <Image src="/bizum-logo.svg" alt="Bizum Logo" width={200} height={60} className="h-8 w-auto mr-4" />
                 {isPending ? flatT.processingPayment || "Processing..." : `${flatT.processPayment} - ${getAmount(paymentType, customAmount, selectedService, isMember)}€`}
               </Button>
@@ -539,6 +579,20 @@ export default function PaymentForm () {
             setBizumResult(null);
           }}
           t={flatT}
+        />
+        <TermsModal
+          open={showTermsModal}
+          title={termsConditionsData[language].title}
+          close={t.close as string}
+          sections={termsConditionsData[language].sections}
+          onOpenChange={setShowTermsModal}
+        />
+        <TermsModal
+          open={showPrivacyModal}
+          title={privacyPolicyData[language].title}
+          close={t.close as string}
+          sections={privacyPolicyData[language].sections}
+          onOpenChange={setShowPrivacyModal}
         />
       </div>
     </div>
