@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { PaymentType } from "@/types/payment";
 import { Language } from "@/types/payment";
-import translations from "@/lib/translations";
+import translations from "@/lib/copy/translations";
 import { getAmount, getDescription, validateSpanishPhone } from "@/lib/utils/payment";
 import PersonalInfoForm from "@/components/payment/PersonalInfoForm";
 import PaymentDetailsTabs from "@/components/payment/PaymentDetailsTabs";
