@@ -25,7 +25,7 @@ export const paymentSchema = z.object({
   productDescription: z.preprocess(trimDescriptionString, z.string('Invalid product description').min(1)),
   name: z.preprocess(trimDescriptionString, z.string('Invalid member name').min(4)),
   surname: z.preprocess(trimDescriptionString, z.string('Invalid member surname').min(4)),
-  email: z.email("Invalid email address").nullish(),
+  email: z.email("Invalid email address"),
   language: z.enum(['es', 'en'])
 }).transform((payment) => {
   return {
