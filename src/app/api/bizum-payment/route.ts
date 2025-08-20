@@ -1,7 +1,7 @@
 import z from 'zod';
 import { prisma } from '@/lib/db';
 import { redsysRestEventSchema } from '@/lib/schemas/redsys';
-import translations from '@/lib/translations';
+import translations from '@/lib/copy/translations';
 import { getRedsysResponseData } from '@/lib/utils/crypto';
 import { requireEnv } from '@/lib/utils/server';
 import { Language } from '@/types/payment';

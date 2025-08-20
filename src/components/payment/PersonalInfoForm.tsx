@@ -59,13 +59,14 @@ export default function PersonalInfoForm ({
         </div>
         {includeEmail &&
           <div className="space-y-2">
-            <Label htmlFor="email">{translations.email}</Label>
+            <Label htmlFor="email">{translations.email} *</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={e => onChange("email", e.target.value)}
               className={fieldErrors.email ? "border-red-500" : ""}
+              required
             />
             {fieldErrors.email && <p className="text-xs text-red-500">{fieldErrors.email}</p>}
           </div>

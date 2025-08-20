@@ -9,7 +9,7 @@ const translations: Record<Language, Record<string, string | Record<string, stri
     name: "Nombre",
     surname: "Apellidos",
     phone: "Teléfono",
-    email: "Correo electrónico (opcional)",
+    email: "Correo electrónico",
     paymentDetails: "Detalles del Pago",
     paymentType: "Tipo de Pago",
     dropInClasses: "Clase suelta",
@@ -62,7 +62,13 @@ const translations: Record<Language, Record<string, string | Record<string, stri
       paidWith: "Pagado con",
       thankYouForTrustingUs: "Gracias por confiar en Montgó Beach Volley Club",
       anyQuestions: "Si tienes alguna pregunta, no dudes en contactarnos"
-    }
+    },
+    acceptTerms: "Acepto los",
+    termsAndConditions: "Términos y Condiciones",
+    acceptPrivacy: "Acepto la",
+    privacyPolicy: "Política de Privacidad",
+    close: "Cerrar",
+    legalAcceptanceRequired: "Debe aceptar los términos y condiciones y la política de privacidad para continuar",
   },
   en: {
     title: "Montgó Beach Volley Club",
@@ -71,7 +77,7 @@ const translations: Record<Language, Record<string, string | Record<string, stri
     name: "Name",
     surname: "Surname",
     phone: "Phone Number",
-    email: "Email Address (optional)",
+    email: "Email Address",
     paymentDetails: "Payment Details",
     paymentType: "Payment Type",
     dropInClasses: "Drop-in class",
@@ -124,7 +130,13 @@ const translations: Record<Language, Record<string, string | Record<string, stri
       paidWith: "Paid with",
       thankYouForTrustingUs: "Thank you for trusting in Montgó Beach Volley Club",
       anyQuestions: "If you have any questions, don't hesitate to contact us"
-    }
+    },
+    acceptTerms: "I accept the",
+    termsAndConditions: "Terms and Conditions",
+    acceptPrivacy: "I accept the",
+    privacyPolicy: "Privacy Policy",
+    close: "Close",
+    legalAcceptanceRequired: "You must accept the terms and conditions and privacy policy to continue",
   },
 };
 

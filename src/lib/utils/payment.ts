@@ -1,7 +1,7 @@
 // src/lib/payment-utils.ts
 import type { Language, PaymentType } from "@/types/payment";
 import { servicesPrices, membershipPrice } from "@/lib/club-prices";
-import translations from "@/lib/translations";
+import translations from "@/lib/copy/translations";
 
 export function validateSpanishPhone (phone: string): boolean {
   // Spanish mobile numbers: 9 digits starting with 6, 7, or 9
