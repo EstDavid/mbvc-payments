@@ -69,6 +69,10 @@ const translations: Record<Language, Record<string, string | Record<string, stri
     privacyPolicy: "Política de Privacidad",
     close: "Cerrar",
     legalAcceptanceRequired: "Debe aceptar los términos y condiciones y la política de privacidad para continuar",
+    cookieConsentParagraph: "Utilizamos cookies para mejorar tu experiencia de navegación, mostrarte anuncios o contenido personalizados y analizar nuestro tráfico. Al hacer clic en \"Aceptar todo\", aceptas el uso de cookies.",
+    acceptAll: "Aceptar todo",
+    denyAll: "Solo las estrictamente necesarias",
+    seeCookiePolicy: "Ver política de cookies"
   },
   en: {
     title: "Montgó Beach Volley Club",
@@ -137,6 +141,10 @@ const translations: Record<Language, Record<string, string | Record<string, stri
     privacyPolicy: "Privacy Policy",
     close: "Close",
     legalAcceptanceRequired: "You must accept the terms and conditions and privacy policy to continue",
+    cookieConsentParagraph: "We use cookies to improve your browsing experience, show you personalized ads or content, and analyze our traffic. By clicking \"Accept all\", you consent to our use of cookies.",
+    acceptAll: "Accept all",
+    denyAll: "Only strictly necessary",
+    seeCookiePolicy: "Ver política de cookies"
   },
 };
 

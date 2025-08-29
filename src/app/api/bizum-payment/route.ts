@@ -63,7 +63,7 @@ export async function POST (req: NextRequest) {
           data: { status, redsysResponse: responseCode },
           include: {
             user: {
-              select: { name: true }
+              select: { name: true, lastName: true }
             }
           }
         });
@@ -82,6 +82,7 @@ export async function POST (req: NextRequest) {
             {
               to: order.email,
               name: order.user.name,
+              lastName: order.user.lastName,
               orderNumber: order.id.toString(),
               description: order.description,
               amount: order.amount.toString()

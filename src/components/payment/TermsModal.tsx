@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Fragment } from "react";
 
 type TermsModalProps = {
   open: boolean;
@@ -10,7 +11,7 @@ type TermsModalProps = {
   close: string;
   sections: {
     heading: string;
-    content: string;
+    content?: string;
   }[];
   onOpenChange: (open: boolean) => void;
 };
@@ -32,8 +33,13 @@ export default function TermsModal ({
           <div className="space-y-6">
             {sections.map((section, index) => (
               <div key={index}>
-                <h3 className="font-semibold text-lg mb-2">{section.heading}</h3>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{section.content}</p>
+                {section.content
+                  ? <Fragment>
+                    <h3 className="font-semibold text-lg mb-2">{section.heading}</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{section.content}</p>
+                  </Fragment>
+                  : <h2 className="font-semibold text-lg mb-2">{section.heading}</h2>
+                }
               </div>
             ))}
           </div>

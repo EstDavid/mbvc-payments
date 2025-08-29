@@ -28,6 +28,7 @@ import LegalCheckboxArea from "../payment/legal-checkbox-area";
 import TermsModal from "../payment/TermsModal";
 import { termsConditionsData } from "@/lib/copy/terms-conditions";
 import { privacyPolicyData } from "@/lib/copy/privacy-policy";
+import ConsentCookies from "../cookies/consent-cookies";
 
 const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
 
@@ -146,7 +147,6 @@ export default function PaymentForm () {
           return;
         }
 
-        console.log('polling');
         const res = await fetch(`/api/payment-status?orderNumber=${pollTransaction}`);
         if (res.ok) {
           const data = await res.json();
@@ -397,6 +397,7 @@ export default function PaymentForm () {
       <div className="max-w-2xl mx-auto sm:static pr-4 sm:pr-0 sticky top-2 sm:top-0 z-20 bg-white pt-2 pb-1">
         <LanguageSelector language={language} setLanguage={setLanguage} />
       </div>
+      <ConsentCookies t={flatT} />
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-none sm:shadow-2xl border-0">
           <CardHeader className="text-center">
