@@ -146,7 +146,6 @@ export default function PaymentForm () {
           return;
         }
 
-        console.log('polling');
         const res = await fetch(`/api/payment-status?orderNumber=${pollTransaction}`);
         if (res.ok) {
           const data = await res.json();
