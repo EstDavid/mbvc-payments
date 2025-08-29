@@ -11,6 +11,7 @@ const user = requireEnv('EMAIL_USER');
 const pass = requireEnv('EMAIL_PASS');
 const port = requireEnv('EMAIL_PORT');
 const from = requireEnv('EMAIL_FROM');
+const notificationAddresses = requireEnv('EMAIL_NOTIFICATION_ADDRESSES').split(',');
 
 const transporter = nodemailer.createTransport({
   host,
@@ -29,6 +30,7 @@ const transporter = nodemailer.createTransport({
 type EmailData = {
   to: string;
   name: string;
+  lastName: string;
   orderNumber: string;
   description: string;
   amount: string;
@@ -43,37 +45,38 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
     amount
   } = data;
 
-  try {
-    const info = await transporter.sendMail({
-      from,
-      to,
-      subject: t.subject,
-      attachments: [
-        {
-          filename: "logo_small.png",
-          content: fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png')),
-          cid: "logo@nodemailer"
-        },
-        {
-          filename: "bizum-logo.png",
-          content: fs.readFileSync(path.join(process.cwd(), 'public', 'bizum-logo.png')),
-          cid: "bizumlogo@nodemailer"
-        }
-      ],
-      text: `
+  const emailText = `
           Montgó Beach Volley Club
     
           ${t.hello}${name}${t.thankYouHereIsReceipt}
     
           ${t.bizumPaymentReceipt}
     
-          ${t.orderNumber}: ${orderNumber} ${t.description}: ${description} ${t.amount}: ${amount} €
+          ${t.orderNumber} ${orderNumber} 
+          
+          ${t.description} ${description} 
+          
+          ${t.amount} ${amount} €
     
           ${t.paidWith} Bizum
     
           ${t.thankYouForTrustingUs} ${t.anyQuestions}
-        `,
-      html: `
+        `;
+
+  const attachments = [
+    {
+      filename: "logo_small.png",
+      content: fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png')),
+      cid: "logo@nodemailer"
+    },
+    {
+      filename: "bizum-logo.png",
+      content: fs.readFileSync(path.join(process.cwd(), 'public', 'bizum-logo.png')),
+      cid: "bizumlogo@nodemailer"
+    }
+  ];
+
+  const html = `
           <html lang="${language}">
       
           <head>
@@ -175,7 +178,24 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
           </body>
       
           </html>
-        `
+        `;
+
+  try {
+    await transporter.sendMail({
+      from,
+      to,
+      subject: t.subject,
+      attachments,
+      text: emailText,
+      html
+    });
+
+    await transporter.sendMail({
+      from,
+      to: notificationAddresses,
+      subject: t.subject,
+      attachments,
+      text: `Bizum Payment from ${data.name} ${data.lastName}\n` + emailText
     });
   } catch (error) {
     console.error(error);
