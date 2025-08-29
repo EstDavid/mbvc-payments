@@ -96,6 +96,31 @@ desistir del contrato y lo consideraremos resuelto.
 Como consecuencia de la resolución del contrato, devolveremos todos los pagos recibidos del usuario, incluidos los gastos de entrega sin ninguna demora indebida y, en cualquier caso, en el plazo máximo de 14
 días desde la fecha en que consideremos resuelto el contrato. Por favor, tenga en cuenta que el transporte derivado de la resolución puede tener un coste adicional, por lo que MONTGÓ BEACH VOLLEY CLUB estará autorizado a repercutirle los costes correspondientes.
 
+## POLÍTICA DE CANCELACIÓN Y REEMBOLSO
+
+### Derecho de Desistimiento y Cancelación de Pedidos
+De acuerdo con la legislación española, el cliente tiene derecho a desistir de su compra en un plazo de 14 días naturales sin necesidad de justificación.
+
+El plazo de desistimiento expirará a los 14 días naturales del día de la celebración del contrato para los servicios, o del día que usted o un tercero por usted indicado, distinto del transportista, adquirió la posesión material de los bienes.
+
+Para ejercer el derecho de desistimiento, deberá notificarnos su decisión de desistir del contrato a través de una declaración inequívoca (por ejemplo, un correo electrónico a info@montgobvc.com).
+
+**Excepciones al Derecho de Desistimiento:**
+El derecho de desistimiento no será aplicable a los contratos que se refieran a:
+- El suministro de servicios relacionados con actividades de esparcimiento (como entrenamientos, torneos o eventos deportivos), si los contratos prevén una fecha o un periodo de ejecución específicos.
+- La prestación de servicios, una vez que el servicio haya sido completamente ejecutado, cuando la ejecución haya comenzado, con previo consentimiento expreso del consumidor y usuario y con el reconocimiento por su parte de que es consciente de que, una vez que el contrato haya sido completamente ejecutado por el empresario, habrá perdido su derecho de desistimiento.
+
+### Devolución y Reembolso
+**Para Servicios (Entrenamientos, Torneos, Eventos):**
+- Si cancela un servicio con más de 2 horas de antelación a su inicio, se aplicará la política de cancelación descrita en la sección "POLÍTICA DE REGISTRO Y ASISTENCIA A LOS ENTRENAMIENTOS".
+- Si ha pagado por un servicio y este es cancelado por MONTGÓ BEACH VOLLEY CLUB, se le ofrecerá la opción de reprogramar el servicio o recibir un reembolso completo del importe pagado.
+- No se realizarán reembolsos por inasistencia a los servicios contratados si no se cumple con la política de cancelación.
+
+**Para Productos (Merchandising, etc.):**
+- En caso de que se ofrezcan productos, el cliente podrá devolverlos en un plazo de 14 días desde su recepción, siempre que se encuentren en perfecto estado, sin usar y en su embalaje original.
+- Para solicitar una devolución, póngase en contacto con nosotros en info@montgobvc.com. Los costes de envío de la devolución correrán a cargo del cliente, salvo que el producto sea defectuoso o incorrecto.
+- Una vez recibido y verificado el producto, procederemos al reembolso del importe correspondiente en un plazo máximo de 14 días naturales.
+
 ## POLÍTICA DE REGISTRO Y ASISTENCIA A LOS ENTRENAMIENTOS
 
 ### 1. Registro y Cancelaciones
