@@ -44,7 +44,7 @@ export default function ConsentCookies ({ t }: { t: Record<string, string>; }) {
 
   if (consent === null) {
     return (
-      <div className="fixed bottom-3 z-10 max-w-xl mx-5 p-5 rounded-md bg-white text-stone-700 font-light">
+      <div className="fixed bottom-3 z-10 max-w-screen sm:max-w-xl mx-0 sm:mx-5 p-5 rounded-md bg-blue-50 text-red font-light">
         <p className="pb-2">{t.cookieConsentParagraph}</p>
         <Link
           href="https://montgobvc.com/cookies/"
@@ -52,15 +52,15 @@ export default function ConsentCookies ({ t }: { t: Record<string, string>; }) {
           className="flex align-middle items-center gap-2"
 
         ><p className="py-4">{t.seeCookiePolicy}</p><SquareArrowOutUpRight size={16} /></Link>
-        <div className="flex align-middle justify-end space-x-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap:0 align-middle justify-end space-x-4">
           <Button
             onClick={denyCookie}
             variant='outline'
-            className="rounded-lg text-md font-normal px-8"
+            className="rounded-lg text-md font-normal px-8 w-full sm:w-auto"
           >{t.denyAll}</Button>
           <Button
             onClick={acceptCookie}
-            className="rounded-lg text-md font-normal px-8 bg-stone-700 hover:bg-accent-foreground"
+            className="rounded-lg text-md font-normal px-8 bg-stone-700 hover:bg-accent-foreground full sm:w-auto"
           >{t.acceptAll}</Button>
         </div>
       </div>
