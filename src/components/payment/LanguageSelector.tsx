@@ -8,11 +8,11 @@ interface LanguageSelectorProps {
   setLanguage: (lang: Language) => void;
 }
 
-export default function LanguageSelector({ language, setLanguage }: LanguageSelectorProps) {
+export default function LanguageSelector ({ language, setLanguage }: LanguageSelectorProps) {
   return (
     <div className="flex justify-end mb-6">
       <Select value={language} onValueChange={setLanguage}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger>
           <Globe className="w-4 h-4 mr-2" />
           <SelectValue />
         </SelectTrigger>
