@@ -18,7 +18,8 @@ function trimDescriptionString (val: unknown,) {
 }
 
 export const paymentSchema = z.object({
-  phoneNumber: z.string().regex(/^[679]\d{8}$/, "Invalid phone number"),
+  phoneNumber: z.string().min(4, "Invalid phone number").max(15, "Phone number too long"),
+  countryDialCode: z.string().regex(/^\+\d{1,4}$/, "Invalid country code"),
   amount: z.string()
     .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount")
     .refine(val => parseFloat(val) >= 1, { message: "Amount must be 1 euro or above" }),
@@ -32,6 +33,16 @@ export const paymentSchema = z.object({
     ...payment,
     memberName: trimString(`${payment.name} ${payment.surname}`, MAX_CHAR_NAME)
   };
+}).refine((data) => {
+  // If Spanish country code, validate Spanish phone format
+  if (data.countryDialCode === '+34') {
+    return /^[679]\d{8}$/.test(data.phoneNumber);
+  }
+  // For other countries, use a more generic validation (digits only, reasonable length)
+  return /^\d{4,15}$/.test(data.phoneNumber);
+}, {
+  message: "Invalid phone number format for the selected country",
+  path: ["phoneNumber"]
 });
 
 export const redsysEncodedResponseSchema = z.object({
