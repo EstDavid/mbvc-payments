@@ -52,7 +52,7 @@ export default function PersonalInfoForm ({
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {countryCodes.map((country: CountryCode) => (
-                  <SelectItem key={country.code} value={country.dialCode}>
+                  <SelectItem key={country.code} value={country.code}>
                     <span className="flex items-center gap-2">
                       <span>{country.flag}</span>
                       <span>{country.dialCode}</span>

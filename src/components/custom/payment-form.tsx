@@ -29,7 +29,7 @@ import TermsModal from "../payment/TermsModal";
 import { termsConditionsData } from "@/lib/copy/terms-conditions";
 import { privacyPolicyData } from "@/lib/copy/privacy-policy";
 import ConsentCookies from "../cookies/consent-cookies";
-import { defaultCountryCode } from "@/lib/country-codes";
+import { countryCodes, defaultCountryCode } from "@/lib/country-codes";
 
 const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
 
@@ -256,13 +256,16 @@ export default function PaymentForm () {
   };
 
   const handleCountryCodeChange = (value: string) => {
-    setFormData({ ...formData, countryCode: value });
-    // Revalidate phone number with new country code
-    if (formData.phone.length > 0) {
-      if (validateInternationalPhone(formData.phone, value)) {
-        setPhoneError("");
-      } else {
-        setPhoneError(value === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
+    const countryCode = countryCodes.find(c => c.code === value);
+    if (countryCode) {
+      setFormData({ ...formData, countryCode: countryCode.dialCode });
+      // Revalidate phone number with new country code
+      if (formData.phone.length > 0) {
+        if (validateInternationalPhone(formData.phone, value)) {
+          setPhoneError("");
+        } else {
+          setPhoneError(value === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
+        }
       }
     }
   };
