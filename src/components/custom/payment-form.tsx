@@ -61,7 +61,8 @@ export default function PaymentForm () {
     surname: "",
     phone: "",
     email: "",
-    countryCode: defaultCountryCode.dialCode,
+    countryDialCode: defaultCountryCode.dialCode,
+    countryCode: defaultCountryCode.code
   });
   const [phoneError, setPhoneError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -116,7 +117,8 @@ export default function PaymentForm () {
         setFormData((prev) => ({
           ...prev,
           ...parsed,
-          countryCode: parsed.countryCode || defaultCountryCode.dialCode,
+          countryDialCode: parsed.countryDialCode || defaultCountryCode.dialCode,
+          countryCode: parsed.countryCode || defaultCountryCode.code,
         }));
         if (parsed.language) {
           setLanguage(parsed.language);
@@ -229,7 +231,7 @@ export default function PaymentForm () {
     const cleanPhone = value.replace(/\D/g, "");
 
     // Limit based on country code
-    const maxLength = formData.countryCode === '+34' ? 9 : 15;
+    const maxLength = formData.countryDialCode === '+34' ? 9 : 15;
     if (cleanPhone.length <= maxLength) {
       setFormData({ ...formData, phone: cleanPhone });
 
@@ -244,10 +246,10 @@ export default function PaymentForm () {
 
       // Validate if phone has content
       if (cleanPhone.length > 0) {
-        if (validateInternationalPhone(cleanPhone, formData.countryCode)) {
+        if (validateInternationalPhone(cleanPhone, formData.countryDialCode)) {
           setPhoneError("");
         } else {
-          setPhoneError(formData.countryCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
+          setPhoneError(formData.countryDialCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
         }
       } else {
         setPhoneError("");
@@ -256,9 +258,13 @@ export default function PaymentForm () {
   };
 
   const handleCountryCodeChange = (value: string) => {
-    const countryCode = countryCodes.find(c => c.code === value);
-    if (countryCode) {
-      setFormData({ ...formData, countryCode: countryCode.dialCode });
+    const selectedCountry = countryCodes.find(c => c.code === value);
+    if (selectedCountry) {
+      setFormData({
+        ...formData,
+        countryDialCode: selectedCountry.dialCode,
+        countryCode: selectedCountry.code
+      });
       // Revalidate phone number with new country code
       if (formData.phone.length > 0) {
         if (validateInternationalPhone(formData.phone, value)) {
@@ -291,11 +297,11 @@ export default function PaymentForm () {
     setFieldErrors({});
 
     // Validate phone before submission
-    if (!validateInternationalPhone(formData.phone, formData.countryCode)) {
+    if (!validateInternationalPhone(formData.phone, formData.countryDialCode)) {
       setPhoneError(
         formData.phone.trim() === ""
           ? flatT.phoneRequired
-          : (formData.countryCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational)
+          : (formData.countryDialCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational)
       );
       setIsProcessing(false);
       return;
@@ -327,6 +333,7 @@ export default function PaymentForm () {
             surname: formData.surname,
             phone: formData.phone,
             email: formData.email,
+            countryDialCode: formData.countryDialCode,
             countryCode: formData.countryCode,
             language: language,
           })
@@ -342,7 +349,7 @@ export default function PaymentForm () {
     paymentData.append("name", formData.name);
     paymentData.append("surname", formData.surname);
     paymentData.append("phoneNumber", formData.phone);
-    paymentData.append("countryCode", formData.countryCode);
+    paymentData.append("countryDialCode", formData.countryDialCode);
     if (useEmailFeature && formData.email) {
       paymentData.append("email", formData.email);
     }
@@ -488,6 +495,9 @@ export default function PaymentForm () {
                   email: flatT.email,
                   phoneFormat: flatT.phoneFormat,
                   countryCode: flatT.countryCode,
+                  setCountryCode: flatT.setCountryCode,
+                  selectCountry: flatT.selectCountry,
+                  noCountryFound: flatT.noCountryFound
                 }}
                 includeEmail={useEmailFeature}
               />

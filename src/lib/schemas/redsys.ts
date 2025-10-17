@@ -19,7 +19,7 @@ function trimDescriptionString (val: unknown,) {
 
 export const paymentSchema = z.object({
   phoneNumber: z.string().min(4, "Invalid phone number").max(15, "Phone number too long"),
-  countryCode: z.string().regex(/^\+\d{1,4}$/, "Invalid country code"),
+  countryDialCode: z.string().regex(/^\+\d{1,4}$/, "Invalid country code"),
   amount: z.string()
     .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount")
     .refine(val => parseFloat(val) >= 1, { message: "Amount must be 1 euro or above" }),
@@ -35,7 +35,7 @@ export const paymentSchema = z.object({
   };
 }).refine((data) => {
   // If Spanish country code, validate Spanish phone format
-  if (data.countryCode === '+34') {
+  if (data.countryDialCode === '+34') {
     return /^[679]\d{8}$/.test(data.phoneNumber);
   }
   // For other countries, use a more generic validation (digits only, reasonable length)

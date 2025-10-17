@@ -23,7 +23,7 @@ const orderNumberCodePadding = parseInt(requireEnv('ORDER_NUMBER_CODE_PADDING'))
 function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, orderNumber: string): RedsysRequestParameters {
   const {
     phoneNumber,
-    countryCode,
+    countryDialCode,
     amount,
     productDescription,
     memberName,
@@ -51,7 +51,7 @@ function createRequestParameters (paymentData: z.infer<typeof paymentSchema>, or
   };
 
   // Construct full international phone number
-  const fullPhoneNumber = isTestEnvironment ? `+34700000000` : `${countryCode}${phoneNumber}`;
+  const fullPhoneNumber = isTestEnvironment ? `+34700000000` : `${countryDialCode}${phoneNumber}`;
 
   const transactionParameters: RedsysTransactionParameters = {
     DS_MERCHANT_PAYMETHODS: "z",

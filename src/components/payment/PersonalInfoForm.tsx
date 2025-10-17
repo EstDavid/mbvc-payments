@@ -1,8 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { countryCodes, CountryCode } from "@/lib/country-codes";
 import React from "react";
+import { CountryCodeSelector } from "./CountryCodeSelector";
 
 export interface PersonalInfoFormProps {
   formData: {
@@ -25,6 +24,9 @@ export interface PersonalInfoFormProps {
     email: string;
     phoneFormat: string;
     countryCode: string;
+    setCountryCode: string;
+    selectCountry: string;
+    noCountryFound: string;
   };
   includeEmail: boolean;
 }
@@ -46,21 +48,15 @@ export default function PersonalInfoForm ({
         <div className="space-y-2">
           <Label htmlFor="phone">{translations.phone} *</Label>
           <div className="flex gap-2">
-            <Select value={formData.countryCode} onValueChange={onCountryCodeChange}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                {countryCodes.map((country: CountryCode) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    <span className="flex items-center gap-2">
-                      <span>{country.flag}</span>
-                      <span>{country.dialCode}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CountryCodeSelector
+              messages={{
+                setCountryCode: translations.setCountryCode,
+                selectCountry: translations.selectCountry,
+                noCountryFound: translations.noCountryFound
+              }}
+              countryCode={formData.countryCode}
+              onCountryCodeChange={onCountryCodeChange}
+            />
             <Input
               id="phone"
               type="tel"
