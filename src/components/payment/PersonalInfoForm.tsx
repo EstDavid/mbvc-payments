@@ -1,5 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { countryCodes, CountryCode } from "@/lib/country-codes";
 import React from "react";
 
 export interface PersonalInfoFormProps {
@@ -8,11 +10,13 @@ export interface PersonalInfoFormProps {
     surname: string;
     phone: string;
     email: string;
+    countryCode: string;
   };
   phoneError: string;
   fieldErrors: Record<string, string>;
   onChange: (field: string, value: string) => void;
   onPhoneChange: (value: string) => void;
+  onCountryCodeChange: (value: string) => void;
   translations: {
     personalInfo: string;
     name: string;
@@ -20,6 +24,7 @@ export interface PersonalInfoFormProps {
     phone: string;
     email: string;
     phoneFormat: string;
+    countryCode: string;
   };
   includeEmail: boolean;
 }
@@ -30,6 +35,7 @@ export default function PersonalInfoForm ({
   fieldErrors,
   onChange,
   onPhoneChange,
+  onCountryCodeChange,
   translations,
   includeEmail,
 }: PersonalInfoFormProps) {
@@ -39,17 +45,29 @@ export default function PersonalInfoForm ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="phone">{translations.phone} *</Label>
-          <div className="flex">
-            <div className="flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md text-sm font-medium text-gray-700">
-              +34
-            </div>
+          <div className="flex gap-2">
+            <Select value={formData.countryCode} onValueChange={onCountryCodeChange}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {countryCodes.map((country: CountryCode) => (
+                  <SelectItem key={country.code} value={country.dialCode}>
+                    <span className="flex items-center gap-2">
+                      <span>{country.flag}</span>
+                      <span>{country.dialCode}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
               id="phone"
               type="tel"
               value={formData.phone}
               onChange={e => onPhoneChange(e.target.value)}
-              placeholder="612345678"
-              className={`rounded-l-none ${phoneError || fieldErrors.phoneNumber ? "border-red-500" : ""}`}
+              placeholder={formData.countryCode === '+34' ? "612345678" : "123456789"}
+              className={`flex-1 ${phoneError || fieldErrors.phoneNumber ? "border-red-500" : ""}`}
               required
             />
           </div>

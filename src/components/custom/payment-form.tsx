@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { PaymentType } from "@/types/payment";
 import { Language } from "@/types/payment";
 import translations from "@/lib/copy/translations";
-import { getAmount, getDescription, validateSpanishPhone } from "@/lib/utils/payment";
+import { getAmount, getDescription, validateInternationalPhone } from "@/lib/utils/payment";
 import PersonalInfoForm from "@/components/payment/PersonalInfoForm";
 import PaymentDetailsTabs from "@/components/payment/PaymentDetailsTabs";
 import MemberModal from "@/components/payment/MemberModal";
@@ -29,6 +29,7 @@ import TermsModal from "../payment/TermsModal";
 import { termsConditionsData } from "@/lib/copy/terms-conditions";
 import { privacyPolicyData } from "@/lib/copy/privacy-policy";
 import ConsentCookies from "../cookies/consent-cookies";
+import { defaultCountryCode } from "@/lib/country-codes";
 
 const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
 
@@ -60,6 +61,7 @@ export default function PaymentForm () {
     surname: "",
     phone: "",
     email: "",
+    countryCode: defaultCountryCode.dialCode,
   });
   const [phoneError, setPhoneError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -114,6 +116,7 @@ export default function PaymentForm () {
         setFormData((prev) => ({
           ...prev,
           ...parsed,
+          countryCode: parsed.countryCode || defaultCountryCode.dialCode,
         }));
         if (parsed.language) {
           setLanguage(parsed.language);
@@ -225,8 +228,9 @@ export default function PaymentForm () {
     // Remove any non-digit characters
     const cleanPhone = value.replace(/\D/g, "");
 
-    // Limit to 9 digits
-    if (cleanPhone.length <= 9) {
+    // Limit based on country code
+    const maxLength = formData.countryCode === '+34' ? 9 : 15;
+    if (cleanPhone.length <= maxLength) {
       setFormData({ ...formData, phone: cleanPhone });
 
       // Clear field errors for phone when user starts typing
@@ -240,13 +244,25 @@ export default function PaymentForm () {
 
       // Validate if phone has content
       if (cleanPhone.length > 0) {
-        if (validateSpanishPhone(cleanPhone)) {
+        if (validateInternationalPhone(cleanPhone, formData.countryCode)) {
           setPhoneError("");
         } else {
-          setPhoneError(flatT.phoneValidation);
+          setPhoneError(formData.countryCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
         }
       } else {
         setPhoneError("");
+      }
+    }
+  };
+
+  const handleCountryCodeChange = (value: string) => {
+    setFormData({ ...formData, countryCode: value });
+    // Revalidate phone number with new country code
+    if (formData.phone.length > 0) {
+      if (validateInternationalPhone(formData.phone, value)) {
+        setPhoneError("");
+      } else {
+        setPhoneError(value === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational);
       }
     }
   };
@@ -272,11 +288,11 @@ export default function PaymentForm () {
     setFieldErrors({});
 
     // Validate phone before submission
-    if (!validateSpanishPhone(formData.phone)) {
+    if (!validateInternationalPhone(formData.phone, formData.countryCode)) {
       setPhoneError(
         formData.phone.trim() === ""
           ? flatT.phoneRequired
-          : flatT.phoneValidation
+          : (formData.countryCode === '+34' ? flatT.phoneValidation : flatT.phoneValidationInternational)
       );
       setIsProcessing(false);
       return;
@@ -308,6 +324,7 @@ export default function PaymentForm () {
             surname: formData.surname,
             phone: formData.phone,
             email: formData.email,
+            countryCode: formData.countryCode,
             language: language,
           })
         );
@@ -321,7 +338,8 @@ export default function PaymentForm () {
     const paymentData = new FormData();
     paymentData.append("name", formData.name);
     paymentData.append("surname", formData.surname);
-    paymentData.append("phoneNumber", `${formData.phone}`);
+    paymentData.append("phoneNumber", formData.phone);
+    paymentData.append("countryCode", formData.countryCode);
     if (useEmailFeature && formData.email) {
       paymentData.append("email", formData.email);
     }
@@ -458,6 +476,7 @@ export default function PaymentForm () {
                   }
                 }}
                 onPhoneChange={handlePhoneChange}
+                onCountryCodeChange={handleCountryCodeChange}
                 translations={{
                   personalInfo: flatT.personalInfo,
                   name: flatT.name,
@@ -465,6 +484,7 @@ export default function PaymentForm () {
                   phone: flatT.phone,
                   email: flatT.email,
                   phoneFormat: flatT.phoneFormat,
+                  countryCode: flatT.countryCode,
                 }}
                 includeEmail={useEmailFeature}
               />
