@@ -15,8 +15,15 @@ export default function ProcessingModal ({ isProcessing, followInstructions, t }
           <DialogTitle className="flex items-center justify-center gap-3">
             {t.processing}
           </DialogTitle>
-          <DialogDescription className="text-center">
-            {followInstructions ? t.followInstructions : t.processingDescription}
+          <DialogDescription className={"text-center" + followInstructions ? 'flex flex-col' : ''}>
+            {followInstructions
+              ?
+              <React.Fragment>
+                <span>{t.followInstructions}</span>
+                <span>{t.ifNoNotification}</span>
+              </React.Fragment>
+
+              : t.processingDescription}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-center py-4">

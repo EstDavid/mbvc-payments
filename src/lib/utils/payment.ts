@@ -9,6 +9,16 @@ export function validateSpanishPhone (phone: string): boolean {
   return spanishMobileRegex.test(phone);
 }
 
+export function validateInternationalPhone (phone: string, countryCode: string): boolean {
+  // If Spanish, use specific validation
+  if (countryCode === '+34') {
+    return validateSpanishPhone(phone);
+  }
+  // For other countries, check if it's digits only and reasonable length
+  const internationalPhoneRegex = /^\d{4,15}$/;
+  return internationalPhoneRegex.test(phone);
+}
+
 export function getAmount (paymentType: PaymentType, customAmount: string, selectedService: string, isMember: boolean): number {
   if (paymentType === "membership") return membershipPrice;
   if (paymentType === "custom") return Number.parseFloat(customAmount) || 0;
