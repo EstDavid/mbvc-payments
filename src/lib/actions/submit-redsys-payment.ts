@@ -107,10 +107,10 @@ export async function submitRedsysPayment (formData: FormData) {
       user: {
         connectOrCreate: {
           where: {
-            phoneNumber: data.phoneNumber
+            phoneNumber: data.countryDialCode + data.phoneNumber
           },
           create: {
-            phoneNumber: data.phoneNumber,
+            phoneNumber: data.countryDialCode + data.phoneNumber,
             name: data.name,
             lastName: data.surname
           }
