@@ -34,8 +34,10 @@ import { countryCodes, defaultCountryCode } from "@/lib/country-codes";
 const clubUrl = process.env.NEXT_PUBLIC_CLUB_URL;
 
 const emailFeatureFlag = process.env.NEXT_PUBLIC_EMAIL_FEATURE_FLAG;
+const tournamentFeatureFlag = process.env.NEXT_PUBLIC_TOURNAMENT_TAB_ENABLED;
 
 const useEmailFeature = emailFeatureFlag === 'TRUE';
+const showTournamentTab = tournamentFeatureFlag === 'TRUE';
 
 export default function PaymentForm () {
   const router = useRouter();
@@ -517,6 +519,7 @@ export default function PaymentForm () {
                   customDescription={customDescription}
                   isCustomAmount={isCustomAmount}
                   fieldErrors={fieldErrors}
+                  showTournamentTab={showTournamentTab}
                   setPaymentType={setPaymentType}
                   handleMemberToggle={handleMemberToggle}
                   setSelectedService={setSelectedService}

@@ -16,6 +16,7 @@ interface PaymentDetailsTabsProps {
   customDescription: string;
   isCustomAmount: boolean;
   fieldErrors: Record<string, string>;
+  showTournamentTab: boolean;
   setPaymentType: (type: PaymentType) => void;
   handleMemberToggle: (checked: boolean) => void;
   setSelectedService: (service: string) => void;
@@ -33,6 +34,7 @@ export default function PaymentDetailsTabs ({
   customDescription,
   isCustomAmount,
   fieldErrors,
+  showTournamentTab,
   setPaymentType,
   handleMemberToggle,
   setSelectedService,
@@ -102,7 +104,7 @@ export default function PaymentDetailsTabs ({
           onValueChange={value => setPaymentType(value as PaymentType)}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-1 h-auto p-1">
+          <TabsList className={`grid w-full ${showTournamentTab ? 'grid-cols-1 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'} gap-1 h-auto p-1`}>
             <TabsTrigger
               value="drop-in-class"
               className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
@@ -121,6 +123,14 @@ export default function PaymentDetailsTabs ({
             >
               {flatT.membership}
             </TabsTrigger>
+            {showTournamentTab && (
+              <TabsTrigger
+                value="tournament"
+                className="text-base sm:text-sm px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+              >
+                {tServices.tournament}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Drop-in classes Tab */}
@@ -231,6 +241,25 @@ export default function PaymentDetailsTabs ({
               {fieldErrors.productDescription && <p className="text-xs text-red-500">{fieldErrors.productDescription}</p>}
             </div>
           </TabsContent>
+
+          {/* Tournament Tab */}
+          {showTournamentTab && (
+            <TabsContent value="tournament" className="space-y-4 mt-6">
+              {/* Member Toggle */}
+              <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+                <Switch id="member-toggle" checked={isMember} onCheckedChange={handleMemberToggle} />
+                <Label htmlFor="member-toggle" className="text-sm font-medium">
+                  {flatT.memberPrices}
+                </Label>
+              </div>
+              <div className="p-4 bg-[#e6f0f5] rounded-lg border border-[#b3d1e0]">
+                <h4 className="font-semibold text-[#156082] mb-2 text-center text-2xl">
+                  {tServices.tournament}
+                </h4>
+                <div className="text-2xl font-bold text-[#156082] text-center">{servicesPrices.tournament[isMember ? "member" : "nonMember"]}€</div>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       )}
     </div>
