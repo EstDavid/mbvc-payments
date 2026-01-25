@@ -23,6 +23,7 @@ export function getAmount (paymentType: PaymentType, customAmount: string, selec
   if (paymentType === "membership") return membershipPrice;
   if (paymentType === "custom") return Number.parseFloat(customAmount) || 0;
   if (paymentType === "drop-in-class") return servicesPrices.dropIn[isMember ? "member" : "nonMember"];
+  if (paymentType === "tournament") return servicesPrices.tournament[isMember ? "member" : "nonMember"];
   if (selectedService && servicesPrices[selectedService as keyof typeof servicesPrices]) {
     return servicesPrices[selectedService as keyof typeof servicesPrices][isMember ? "member" : "nonMember"];
   }
@@ -38,6 +39,9 @@ export function getDescription (paymentType: PaymentType, customDescription: str
   }
   if (paymentType === "drop-in-class") {
     return `${translations[language].services['dropIn' as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
+  }
+  if (paymentType === "tournament") {
+    return `${translations[language].services['tournament' as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
   }
   if (selectedService) {
     return `${translations[language].services[selectedService as keyof typeof translations[Language]["services"]]}. ${customDescription}`;
