@@ -66,12 +66,12 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
   const attachments = [
     {
       filename: "logo_small.png",
-      content: fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png')),
+      path: `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`,
       cid: "logo@nodemailer"
     },
     {
       filename: "bizum-logo.png",
-      content: fs.readFileSync(path.join(process.cwd(), 'public', 'bizum-logo.png')),
+      path: `${process.env.NEXT_PUBLIC_BASE_URL}/bizum-logo.png`,
       cid: "bizumlogo@nodemailer"
     }
   ];
