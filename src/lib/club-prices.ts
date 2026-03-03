@@ -1,10 +1,10 @@
 // src/lib/club-prices.ts
 
 export const servicesPrices = {
-  monthly1: { nonMember: 42, member: 33 },
-  monthly2: { nonMember: 68, member: 54 },
-  monthly3: { nonMember: 90, member: 72 },
-  dropIn: { nonMember: 12, member: 10 },
+  monthly1: { nonMember: 50, member: 40 },
+  monthly2: { nonMember: 80, member: 65 },
+  monthly3: { nonMember: 105, member: 85 },
+  dropIn: { nonMember: 15, member: 12 },
   tournament: { nonMember: 15, member: 12 }
 };
 
