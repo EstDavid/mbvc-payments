@@ -107,26 +107,26 @@ export default function PaymentDetailsTabs ({
           <TabsList className={`grid w-full ${showTournamentTab ? 'grid-cols-1 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'} gap-1 h-auto p-1`}>
             <TabsTrigger
               value="drop-in-class"
-              className="text-base sm:text-sm px-2 py-2 h-auto whitespace-normal text-center break-words leading-tight"
+              className="text-base sm:text-sm px-2 py-2 h-full whitespace-normal text-center break-words leading-tight"
             >
               {flatT.dropInClasses}
             </TabsTrigger>
             <TabsTrigger
               value="monthly-plans"
-              className="text-base sm:text-sm px-2 py-2 h-auto whitespace-normal text-center break-words leading-tight"
+              className="text-base sm:text-sm px-2 py-2 h-full whitespace-normal text-center break-words leading-tight"
             >
               {flatT.monthlyPlans}
             </TabsTrigger>
             <TabsTrigger
               value="membership"
-              className="text-base sm:text-sm px-2 py-2 h-auto whitespace-normal text-center break-words leading-tight"
+              className="text-base sm:text-sm px-2 py-2 h-full whitespace-normal text-center break-words leading-tight"
             >
               {flatT.membership}
             </TabsTrigger>
             {showTournamentTab && (
               <TabsTrigger
                 value="tournament"
-                className="text-base sm:text-sm px-2 py-2 h-auto whitespace-normal text-center break-words leading-tight"
+                className="text-base sm:text-sm px-2 py-2 h-full whitespace-normal text-center break-words leading-tight"
               >
                 {tServices.tournament}
               </TabsTrigger>
