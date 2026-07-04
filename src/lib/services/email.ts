@@ -1,7 +1,5 @@
 import { Language } from '@/types/payment';
 import nodemailer from 'nodemailer';
-import fs from 'fs';
-import path from 'path';
 import { requireEnv } from '@/lib/utils/server';
 
 const rejectUnauthorized = requireEnv('EMAIL_REJECT_UNAUTHORIZED');
@@ -31,6 +29,7 @@ type EmailData = {
   to: string;
   name: string;
   lastName: string;
+  phoneNumber: string;
   orderNumber: string;
   description: string;
   amount: string;
@@ -195,7 +194,7 @@ export async function sendEmail (t: Record<string, string>, language: Language, 
       to: notificationAddresses,
       subject: t.subject,
       attachments,
-      text: `Bizum Payment from ${data.name} ${data.lastName}\n` + emailText
+      text: `Bizum Payment from ${data.name} ${data.lastName}\nPhone number: ${data.phoneNumber}\n` + emailText
     });
   } catch (error) {
     console.error(error);
