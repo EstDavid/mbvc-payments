@@ -5,7 +5,7 @@ export const servicesPrices = {
   monthly2: { nonMember: 80, member: 65 },
   monthly3: { nonMember: 105, member: 85 },
   dropIn: { nonMember: 15, member: 12 },
-  tournament: { nonMember: 22, member: 18 }
+  tournament: { nonMember: 18, member: 15 }
 };
 
 export const membershipPrice = 36;
